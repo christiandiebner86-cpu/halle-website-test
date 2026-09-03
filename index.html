@@ -1,0 +1,627 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Intensivpflege-Halle-GmbH – außerklinische Intensivpflege für Erwachsene und Kinder, individuelle Versorgung und Beratung." />
+  <title>Intensivpflege-Halle-GmbH</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root{
+      --green:#4f8f1f;
+      --green-dark:#2f6f12;
+      --green-soft:#eef7e9;
+      --blue:#1598d3;
+      --blue-dark:#0b6fa8;
+      --blue-soft:#eaf7fd;
+      --ink:#183143;
+      --muted:#687783;
+      --line:#dfe8ec;
+      --bg:#f6f9fa;
+      --card:#ffffff;
+      --shadow:0 18px 50px rgba(19,48,67,.10);
+      --radius:24px;
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
+    a{color:inherit}
+    img{max-width:100%;display:block}
+    button,input,textarea{font:inherit}
+
+    .topbar{background:#123245;color:#eaf5fb;font-size:14px}
+    .topbar-inner{max-width:1180px;margin:auto;padding:8px 20px;display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap}
+    .topbar a{text-decoration:none}
+
+    .site-header{position:sticky;top:0;z-index:1000;background:rgba(255,255,255,.97);backdrop-filter:blur(14px);border-bottom:1px solid rgba(223,232,236,.95);box-shadow:0 8px 26px rgba(18,50,69,.05)}
+    .header-main{max-width:1180px;margin:auto;padding:13px 20px 10px;display:flex;align-items:center;gap:22px}
+    .brand{display:flex;align-items:center;gap:14px;text-decoration:none;min-width:250px}
+    .brand img{width:190px;height:auto}
+    .header-contact{margin-left:auto;display:flex;align-items:center;gap:9px;flex-wrap:wrap;justify-content:flex-end}
+    .header-chip{display:inline-flex;align-items:center;gap:7px;text-decoration:none;border:1px solid var(--line);background:#fff;color:#315064;border-radius:999px;padding:8px 11px;font-size:13px;font-weight:750}
+    .header-chip:hover{border-color:#b8d8ca;background:#f8fcfa}
+    .qm-top{background:linear-gradient(135deg,var(--green),var(--blue));color:#fff!important;border-color:transparent;box-shadow:0 8px 20px rgba(34,131,118,.18)}
+    .nav-shell{border-top:1px solid #edf2f4;background:rgba(255,255,255,.96)}
+    .nav{max-width:1180px;margin:auto;padding:9px 20px 11px;display:flex;align-items:center;gap:8px;overflow-x:auto;scrollbar-width:none}
+    .nav::-webkit-scrollbar{display:none}
+    .nav a{flex:0 0 auto;text-decoration:none;font-weight:800;padding:10px 14px;border-radius:999px;color:#365466;border:1px solid transparent;transition:.18s ease}
+    .nav a:hover{background:var(--green-soft);color:var(--green-dark);border-color:#d8ead0}
+    .nav a.active{background:linear-gradient(135deg,var(--green),var(--blue));color:#fff;border-color:transparent;box-shadow:0 8px 18px rgba(34,131,118,.18)}
+    .nav .qm-link{background:#123245;color:#fff;border-color:#123245;margin-left:auto}
+    .nav .qm-link:hover{background:#0d2938;color:#fff;border-color:#0d2938}
+
+    .hero{position:relative;overflow:hidden;background:linear-gradient(135deg,#f8fff4 0%,#f5fbff 47%,#eaf7fd 100%)}
+    .hero:before{content:"";position:absolute;width:520px;height:520px;border-radius:50%;right:-170px;top:-220px;background:radial-gradient(circle,rgba(21,152,211,.18),rgba(21,152,211,0) 68%)}
+    .hero:after{content:"";position:absolute;width:430px;height:430px;border-radius:50%;left:-200px;bottom:-250px;background:radial-gradient(circle,rgba(79,143,31,.18),rgba(79,143,31,0) 68%)}
+    .hero-inner{position:relative;z-index:1;max-width:1180px;margin:auto;padding:82px 20px 74px;display:grid;grid-template-columns:1.08fr .92fr;gap:54px;align-items:center}
+    .eyebrow{display:inline-flex;gap:8px;align-items:center;background:#fff;border:1px solid #dfeadb;border-radius:999px;padding:8px 13px;font-weight:800;color:var(--green-dark);box-shadow:0 8px 22px rgba(43,103,27,.07)}
+    .hero h1{font-size:clamp(42px,6vw,68px);line-height:1.04;margin:22px 0 20px;letter-spacing:-.035em}
+    .hero h1 span{background:linear-gradient(90deg,var(--green),var(--blue));-webkit-background-clip:text;background-clip:text;color:transparent}
+    .hero p{font-size:19px;color:#536b78;max-width:690px;margin:0 0 28px}
+    .hero-actions{display:flex;gap:12px;flex-wrap:wrap}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;text-decoration:none;border-radius:14px;padding:13px 18px;font-weight:850;border:1px solid transparent}
+    .btn-primary{background:linear-gradient(135deg,var(--green),var(--blue));color:#fff;box-shadow:0 12px 28px rgba(26,127,121,.24)}
+    .btn-secondary{background:#fff;border-color:var(--line);color:#244456}
+    .trust-row{margin-top:28px;display:flex;gap:10px;flex-wrap:wrap;color:#506573;font-size:14px}
+    .trust-pill{background:#fff;border:1px solid var(--line);border-radius:999px;padding:8px 11px}
+
+    .hero-panel{background:rgba(255,255,255,.9);border:1px solid rgba(223,232,236,.9);border-radius:30px;padding:28px;box-shadow:var(--shadow);position:relative}
+    .hero-logo{background:#fff;border-radius:20px;padding:18px;border:1px solid #e5ecef;margin-bottom:18px}
+    .hero-logo img{width:100%;max-width:390px;margin:auto}
+    .quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .quick-card{padding:17px;border-radius:18px;background:#f8fbfc;border:1px solid #e5ecef}
+    .quick-card strong{display:block;font-size:17px;margin-top:4px}
+    .quick-card span{font-size:13px;color:var(--muted)}
+
+    section{scroll-margin-top:145px}
+    .section{max-width:1180px;margin:auto;padding:78px 20px}
+    .section-head{max-width:760px;margin-bottom:30px}
+    .section-kicker{font-weight:850;color:var(--blue-dark);text-transform:uppercase;letter-spacing:.08em;font-size:13px}
+    .section h2{font-size:clamp(31px,4vw,46px);line-height:1.12;margin:8px 0 14px;letter-spacing:-.025em}
+    .section-lead{color:var(--muted);font-size:18px;margin:0}
+
+    .services{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .service-card{background:#fff;border:1px solid var(--line);border-radius:22px;padding:24px;box-shadow:0 9px 28px rgba(17,52,72,.06);transition:.2s ease}
+    .service-card:hover{transform:translateY(-4px);box-shadow:0 18px 38px rgba(17,52,72,.10)}
+    .icon{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;font-size:24px;background:linear-gradient(135deg,var(--green-soft),var(--blue-soft));margin-bottom:16px}
+    .service-card h3{margin:0 0 8px;font-size:20px}
+    .service-card p{margin:0;color:var(--muted)}
+
+    .split-wrap{background:#fff;border-block:1px solid var(--line)}
+    .split{max-width:1180px;margin:auto;padding:78px 20px;display:grid;grid-template-columns:1fr 1fr;gap:50px;align-items:center}
+    .feature-panel{background:linear-gradient(150deg,#123245,#174c62);color:#fff;border-radius:30px;padding:32px;box-shadow:var(--shadow)}
+    .feature-panel h3{font-size:27px;margin:0 0 12px}
+    .feature-panel p{color:#dbe9ef}
+    .checklist{display:grid;gap:12px;margin-top:22px}
+    .check{display:flex;gap:11px;align-items:flex-start;background:rgba(255,255,255,.08);padding:13px 14px;border-radius:14px}
+
+    .career{background:linear-gradient(135deg,#f0f8eb,#eef8fd);border:1px solid #dce9e2;border-radius:30px;padding:34px;display:grid;grid-template-columns:1.1fr .9fr;gap:35px;align-items:center}
+    .career h3{font-size:30px;margin:0 0 10px}
+    .career p{color:#5e707b}
+    .career-points{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .career-point{background:#fff;border:1px solid #e0e8e5;border-radius:15px;padding:13px 14px;font-weight:750}
+
+    .forms-wrap{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+    .form-card{background:#fff;border:1px solid var(--line);border-radius:24px;padding:26px;box-shadow:0 10px 30px rgba(17,52,72,.06)}
+    .form-card h3{margin:0 0 8px;font-size:25px}
+    .form-card p{color:var(--muted);margin:0 0 20px}
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .field{display:grid;gap:6px}
+    .field.full{grid-column:1/-1}
+    .field label{font-weight:800;font-size:14px;color:#294757}
+    .field input,.field select,.field textarea{width:100%;border:1px solid var(--line);border-radius:13px;background:#fbfdfe;padding:12px 13px;color:var(--ink);outline:none}
+    .field textarea{min-height:145px;resize:vertical}
+    .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(21,152,211,.10);background:#fff}
+    .form-note{font-size:13px;color:var(--muted);margin-top:10px}
+    .consent{display:flex;gap:10px;align-items:flex-start;margin:14px 0;font-size:13px;color:#536b78}
+    .consent input{margin-top:4px}
+    .form-submit{border:0;cursor:pointer}
+    .form-submit:disabled{opacity:.65;cursor:wait}
+    .form-message{display:none;margin-top:14px;padding:12px 14px;border-radius:12px;font-weight:700}
+    .form-message.success{display:block;background:#edf8e9;color:#346c18;border:1px solid #cfe5c4}
+    .form-message.error{display:block;background:#fff1f1;color:#982d2d;border:1px solid #efcaca}
+    .anonymous-badge{display:inline-flex;align-items:center;gap:7px;background:var(--green-soft);color:var(--green-dark);border:1px solid #d7e9ce;border-radius:999px;padding:7px 10px;font-weight:800;font-size:13px;margin-bottom:14px}
+    .contact-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+    .contact-card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:22px}
+    .contact-card small{display:block;color:var(--muted);font-weight:700;margin-bottom:5px}
+    .contact-card strong{font-size:18px;display:block}
+    .contact-card a{text-decoration:none;color:var(--blue-dark);font-weight:800}
+
+    .cta{margin:0 auto 72px;max-width:1180px;padding:0 20px}
+    .cta-inner{border-radius:30px;padding:36px;background:linear-gradient(120deg,var(--green-dark),var(--green),var(--blue));color:#fff;display:flex;justify-content:space-between;gap:30px;align-items:center;box-shadow:0 22px 50px rgba(20,103,113,.24)}
+    .cta h3{font-size:30px;margin:0 0 7px}
+    .cta p{margin:0;color:#edf8fb}
+    .cta .btn{background:#fff;color:#176b58;white-space:nowrap}
+
+    footer{background:#123245;color:#dce8ee}
+    .footer-inner{max-width:1180px;margin:auto;padding:34px 20px;display:grid;grid-template-columns:1.2fr .8fr;gap:28px;align-items:start}
+    .footer-logo{width:230px;background:#fff;border-radius:14px;padding:8px;margin-bottom:14px}
+    .footer-links{display:flex;gap:16px;flex-wrap:wrap;justify-content:flex-end}
+    .footer-links a{color:#e8f1f5;text-decoration:none}
+    .footer-bottom{border-top:1px solid rgba(255,255,255,.12);padding:15px 20px;text-align:center;font-size:13px;color:#a9bbc4}
+
+    @media(max-width:900px){
+      .header-main{padding:11px 16px}.brand{min-width:0}.brand img{width:170px}.header-contact .header-chip:not(.qm-top){display:none}
+      .nav{padding:8px 16px 10px}.nav .qm-link{margin-left:0}
+      .hero-inner,.split,.career,.forms-wrap{grid-template-columns:1fr}.hero-inner{padding-top:56px}.hero-panel{max-width:650px}.services{grid-template-columns:1fr 1fr}.contact-grid{grid-template-columns:1fr}.footer-inner{grid-template-columns:1fr}.footer-links{justify-content:flex-start}
+    }
+    @media(max-width:620px){
+      .topbar-inner{justify-content:center;text-align:center}.topbar-inner span:last-child{display:none}
+      .header-main{padding:9px 14px}.brand img{width:145px}.qm-top{padding:8px 10px;font-size:12px}
+      .nav{padding:7px 12px 9px;gap:6px}.nav a{padding:8px 11px;font-size:13px}
+      .hero-inner{padding:42px 16px 54px;gap:34px}.hero h1{font-size:42px}.hero p{font-size:17px}.hero-actions .btn{width:100%}
+      .section,.split{padding:58px 16px}.services{grid-template-columns:1fr}.quick-grid{grid-template-columns:1fr}.career-points,.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.cta{padding:0 16px}.cta-inner{padding:27px;flex-direction:column;align-items:flex-start}.cta .btn{width:100%}
+    }
+  
+/* =========================================================
+   STARTSEITE – PROFESSIONAL REFRESH
+   ========================================================= */
+.hero{background:#fff;overflow:visible}
+.hero:before,.hero:after{display:none}
+.hero-inner{
+  max-width:1240px;margin:auto;padding:58px 20px 32px;
+  display:grid;grid-template-columns:minmax(0,.82fr) minmax(460px,1.18fr);
+  gap:44px;align-items:center
+}
+.hero-copy-pro{padding:18px 0 36px}
+.hero-copy-pro .eyebrow{box-shadow:none;border-color:#d9ead2;background:var(--green-soft)}
+.hero-copy-pro h1{font-size:clamp(45px,5.4vw,70px);max-width:720px;margin:18px 0;line-height:1.03;letter-spacing:-.035em}
+.hero-copy-pro h1 span{background:linear-gradient(90deg,var(--green),var(--blue));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero-copy-pro p{max-width:610px;margin:0 0 24px;font-size:18px;color:#536b78}
+.hero-photo{
+  position:relative;min-height:510px;border-radius:32px;overflow:hidden;
+  box-shadow:0 22px 55px rgba(18,50,69,.16);background:#eaf3f7
+}
+.hero-photo img{width:100%;height:100%;min-height:510px;object-fit:cover;object-position:center}
+.hero-photo:after{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,transparent 62%,rgba(14,47,66,.14));pointer-events:none
+}
+.hero-badge{
+  position:absolute;left:20px;bottom:20px;z-index:2;max-width:300px;
+  background:rgba(255,255,255,.94);border:1px solid rgba(255,255,255,.85);
+  backdrop-filter:blur(10px);border-radius:18px;padding:15px 17px;
+  box-shadow:0 12px 30px rgba(10,44,65,.16)
+}
+.hero-badge strong{display:block;font-size:17px;color:var(--ink)}
+.hero-badge span{display:block;font-size:13px;color:var(--muted);margin-top:2px}
+.hero-benefits-wrap{max-width:1240px;margin:0 auto 42px;padding:0 20px}
+.hero-benefits{
+  display:grid;grid-template-columns:repeat(4,1fr);background:#fff;
+  border:1px solid var(--line);border-radius:24px;
+  box-shadow:0 16px 42px rgba(18,50,69,.09);overflow:hidden
+}
+.hero-benefit{padding:22px 20px;display:flex;gap:13px;align-items:flex-start;min-height:112px}
+.hero-benefit + .hero-benefit{border-left:1px solid var(--line)}
+.hero-benefit-icon{
+  width:42px;height:42px;flex:0 0 42px;display:grid;place-items:center;
+  border-radius:13px;background:linear-gradient(135deg,var(--green-soft),var(--blue-soft));font-size:22px
+}
+.hero-benefit strong{display:block;font-size:16px;line-height:1.25}
+.hero-benefit span{display:block;margin-top:5px;font-size:13px;color:var(--muted);line-height:1.45}
+.home-shortcuts{
+  max-width:1240px;margin:0 auto;padding:0 20px 24px;
+  display:grid;grid-template-columns:repeat(3,1fr);gap:16px
+}
+.home-shortcut{
+  text-decoration:none;border-radius:22px;padding:22px 23px;border:1px solid var(--line);
+  background:#fff;box-shadow:0 8px 25px rgba(18,50,69,.05);transition:.18s ease
+}
+.home-shortcut:hover{transform:translateY(-3px);box-shadow:0 16px 34px rgba(18,50,69,.10)}
+.home-shortcut small{display:block;color:var(--muted);font-weight:800;margin-bottom:6px}
+.home-shortcut strong{font-size:19px}
+.home-shortcut.green{background:linear-gradient(135deg,#f8fff5,#eef9e9)}
+.home-shortcut.blue{background:linear-gradient(135deg,#f6fbff,#eaf7fd)}
+.home-shortcut.dark{background:linear-gradient(135deg,#17394d,#0d688f);color:#fff;border-color:transparent}
+.home-shortcut.dark small{color:#cde2ed}
+.home-shortcut.dark strong{color:#fff}
+@media (max-width:950px){
+  .hero-inner{grid-template-columns:1fr;gap:24px;padding-top:42px}
+  .hero-copy-pro{padding-bottom:4px}
+  .hero-photo,.hero-photo img{min-height:440px}
+  .hero-benefits{grid-template-columns:1fr 1fr}
+  .hero-benefit:nth-child(3){border-left:0;border-top:1px solid var(--line)}
+  .hero-benefit:nth-child(4){border-top:1px solid var(--line)}
+  .home-shortcuts{grid-template-columns:1fr}
+}
+@media (max-width:620px){
+  .hero-inner{padding:30px 16px 20px}
+  .hero-copy-pro h1{font-size:42px}
+  .hero-copy-pro p{font-size:17px}
+  .hero-photo,.hero-photo img{min-height:340px;border-radius:24px}
+  .hero-badge{left:12px;right:12px;bottom:12px;max-width:none}
+  .hero-benefits-wrap{padding:0 16px;margin-bottom:32px}
+  .hero-benefits{grid-template-columns:1fr}
+  .hero-benefit + .hero-benefit{border-left:0;border-top:1px solid var(--line)}
+  .home-shortcuts{padding:0 16px 16px}
+}
+
+
+/* Weiterbildungsauswahl im Bewerbungsformular */
+.training-picker{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:8px;
+}
+.training-option{
+  position:relative;
+}
+.training-option input{
+  position:absolute;
+  opacity:0;
+  pointer-events:none;
+}
+.training-option label{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  min-height:42px;
+  padding:10px 14px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  background:#fff;
+  color:var(--ink);
+  font-weight:800;
+  font-size:14px;
+  cursor:pointer;
+  transition:.18s ease;
+  user-select:none;
+}
+.training-option label:hover{
+  border-color:var(--green);
+  background:var(--green-soft);
+}
+.training-option input:checked + label{
+  border-color:var(--green);
+  background:linear-gradient(135deg,var(--green-soft),#eef9e9);
+  color:#2f6c16;
+  box-shadow:0 0 0 2px rgba(118,168,43,.10);
+}
+.training-option input:checked + label:before{
+  content:"✓";
+  font-weight:900;
+}
+.training-hint{
+  margin-top:10px;
+  font-size:13px;
+  color:var(--muted);
+}
+
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbar-inner">
+      <span>Außerklinische Intensivpflege für Erwachsene und Kinder</span>
+      <span><a href="tel:+4934938238868">☎ 03493 82 38 868</a> &nbsp; · &nbsp; <a href="mailto:intensivpflegehalle@gmail.com">intensivpflegehalle@gmail.com</a></span>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="header-main">
+      <a class="brand" href="#start" aria-label="Startseite Intensivpflege-Halle-GmbH">
+        <img src="halle-logo.png" alt="Intensivpflege-Halle-GmbH" />
+      </a>
+      <div class="header-contact">
+        <a class="header-chip" href="tel:+4934938238868">☎ 03493 82 38 868</a>
+        <a class="header-chip" href="mailto:intensivpflegehalle@gmail.com">✉ E-Mail</a>
+        <a class="header-chip qm-top" href="https://christiandiebner86-cpu.github.io/" target="_blank" rel="noopener noreferrer">🔐 QM-Portal</a>
+      </div>
+    </div>
+    <div class="nav-shell">
+      <nav class="nav" aria-label="Hauptnavigation">
+        <a class="active" href="#start">Start</a>
+        <a href="#leistungen">Leistungen</a>
+        <a href="#ueber-uns">Über uns</a>
+        <a href="#karriere">Karriere</a>
+        <a href="#bewerbung">Bewerbung</a>
+        <a href="#beschwerde">Beschwerde</a>
+        <a href="#kontakt">Kontakt</a>
+        <a class="qm-link" href="https://christiandiebner86-cpu.github.io/" target="_blank" rel="noopener noreferrer">QM-Portal ↗</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+
+    <section class="hero" id="start">
+      <div class="hero-inner">
+        <div class="hero-copy-pro">
+          <div class="eyebrow">💚 Außerklinische Intensivpflege in Halle (Saale)</div>
+          <h1>Intensivpflege.<br><span>Mit Herz. Zu Hause.</span></h1>
+          <p>Professionelle Intensivpflege für Erwachsene und Kinder – persönlich, verlässlich und in der vertrauten häuslichen Umgebung.</p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#leistungen">Unsere Leistungen</a>
+            <a class="btn btn-secondary" href="tel:+4934938238868">☎ Jetzt anrufen</a>
+          </div>
+        </div>
+
+        <div class="hero-photo">
+          <img src="hero-intensivpflege.png" alt="Außerklinische Intensivpflege in häuslicher Umgebung" loading="eager">
+          <div class="hero-badge">
+            <strong>Persönlich. Kompetent. Verlässlich.</strong>
+            <span>Individuelle Versorgung mit einem festen Blick auf Sicherheit und Lebensqualität.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-benefits-wrap">
+        <div class="hero-benefits">
+          <div class="hero-benefit"><div class="hero-benefit-icon">🕐</div><div><strong>Rund um die Uhr</strong><span>24-Stunden-Versorgung ist je nach Bedarf möglich.</span></div></div>
+          <div class="hero-benefit"><div class="hero-benefit-icon">🏠</div><div><strong>Zuhause versorgt</strong><span>Pflege in der vertrauten häuslichen Umgebung.</span></div></div>
+          <div class="hero-benefit"><div class="hero-benefit-icon">🩺</div><div><strong>Fachlich spezialisiert</strong><span>Pflegefachkräfte für komplexe Versorgungssituationen.</span></div></div>
+          <div class="hero-benefit"><div class="hero-benefit-icon">🤝</div><div><strong>Persönlich begleitet</strong><span>Beratung und Einbindung von Angehörigen gehören dazu.</span></div></div>
+        </div>
+      </div>
+
+      <div class="home-shortcuts" aria-label="Schnellzugriff">
+        <a class="home-shortcut green" href="#beschwerde"><small>Vertraulich & auf Wunsch anonym</small><strong>Beschwerde oder Hinweis mitteilen →</strong></a>
+        <a class="home-shortcut blue" href="#bewerbung"><small>Wir suchen Pflegefachkräfte</small><strong>Direkt online bewerben →</strong></a>
+        <a class="home-shortcut dark" href="https://christiandiebner86-cpu.github.io/" target="_blank" rel="noopener noreferrer"><small>Für Mitarbeitende</small><strong>🔐 Zum QM-Portal →</strong></a>
+      </div>
+    </section>
+
+
+    <section class="section" id="leistungen">
+      <div class="section-head">
+        <div class="section-kicker">Leistungen</div>
+        <h2>Außerklinische Intensivpflege – persönlich geplant.</h2>
+        <p class="section-lead">Von der Grund- und Behandlungspflege bis zur Beatmungsversorgung und Unterstützung im Alltag: Wir entwickeln die Versorgung gemeinsam mit Patienten, Angehörigen, Ärzten und Therapeuten.</p>
+      </div>
+
+      <div class="services">
+        <article class="service-card"><div class="icon">🫁</div><h3>Beatmung & Überwachung</h3><p>Sicherstellung invasiver und nichtinvasiver Beatmung, Überwachung von Vital- und Beatmungsparametern sowie pflegerische Versorgung rund um Trachealkanülen.</p></article>
+        <article class="service-card"><div class="icon">🏠</div><h3>Versorgung zu Hause</h3><p>Außerklinische Intensivpflege in der gewohnten häuslichen Umgebung – mit individuell abgestimmten Pflege- und Betreuungsabläufen.</p></article>
+        
+        <article class="service-card"><div class="icon">💉</div><h3>Behandlungspflege</h3><p>Umsetzung ärztlicher Verordnungen, Medikamentengabe, Wundversorgung, Katheterisierung und weitere medizinisch-pflegerische Maßnahmen.</p></article>
+        <article class="service-card"><div class="icon">🛏️</div><h3>Grundpflege & Mobilisation</h3><p>Unterstützung bei Körperpflege, An- und Auskleiden, Lagerung, Mobilisation sowie individuelle Prophylaxen.</p></article>
+        <article class="service-card"><div class="icon">🧭</div><h3>Beratung & Überleitung</h3><p>Unterstützung bei Anträgen, Pflegegraden, der Organisation der Versorgung und beim Übergang aus Klinik oder Einrichtung in die außerklinische Versorgung.</p></article>
+      </div>
+    </section>
+
+    <div class="split-wrap" id="ueber-uns">
+      <section class="split">
+        <div>
+          <div class="section-kicker">Über uns</div>
+          <h2>Pflege braucht Vertrauen – und klare Strukturen.</h2>
+          <p class="section-lead">Wir möchten Menschen mit intensivem Pflegebedarf und ihren Angehörigen eine verlässliche Versorgung ermöglichen. Ein persönliches Erstgespräch bildet die Grundlage, um Bedürfnisse, medizinische Anforderungen und den Alltag gemeinsam zu betrachten.</p>
+          <p style="color:var(--muted);margin-top:18px">Unser Schwerpunkt liegt auf der außerklinischen Intensivpflege für Erwachsene und Kinder. Dabei gehören fachübergreifende Zusammenarbeit, individuelle Pflegeplanung und die Einbindung von Angehörigen zum Versorgungskonzept.</p>
+          <a class="btn btn-secondary" href="#kontakt" style="margin-top:12px">Kontakt aufnehmen</a>
+        </div>
+        <div class="feature-panel">
+          <h3>Was uns wichtig ist</h3>
+          <p>Eine gute Intensivpflege ist mehr als medizinische Versorgung. Sie soll Sicherheit schaffen und zugleich Alltag, Würde und Selbstbestimmung so weit wie möglich erhalten.</p>
+          <div class="checklist">
+            <div class="check"><span>✓</span><div><strong>Individuelle Pflegeplanung</strong><br><span style="color:#cbdce3">Abgestimmt auf den jeweiligen Versorgungsbedarf.</span></div></div>
+            <div class="check"><span>✓</span><div><strong>Zusammenarbeit im Netzwerk</strong><br><span style="color:#cbdce3">Mit Ärzten, Therapeuten, Kliniken und Sozialdiensten.</span></div></div>
+            <div class="check"><span>✓</span><div><strong>Angehörige einbeziehen</strong><br><span style="color:#cbdce3">Beratung und Kommunikation als fester Bestandteil.</span></div></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <section class="section" id="karriere">
+      <div class="career">
+        <div>
+          <div class="section-kicker">Karriere</div>
+          <h3>Pflegefachkraft? Dann möchten wir dich kennenlernen.</h3>
+          <p>Wir suchen examinierte Pflegefachkräfte für die außerklinische Intensivpflege. Auch Initiativbewerbungen und die Übernahme kompletter Teams sind möglich.</p>
+          <div class="hero-actions" style="margin-top:20px">
+            <a class="btn btn-primary" href="#bewerbung">Jetzt online bewerben</a>
+            <a class="btn btn-secondary" href="tel:+4934938238868">Rückruf anfragen</a>
+          </div>
+        </div>
+        <div class="career-points">
+          <div class="career-point">👩‍⚕️ Examinierte Pflegefachkräfte</div>
+          <div class="career-point">🤝 Arbeit im festen Pflegeteam</div>
+          <div class="career-point">📚 Fort- & Weiterbildung</div>
+          <div class="career-point">🔄 Teamübernahme möglich</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="bewerbung" style="padding-top:30px">
+      <div class="section-head">
+        <div class="section-kicker">Online-Bewerbung</div>
+        <h2>Einfach und direkt bewerben.</h2>
+        <p class="section-lead">Schicken Sie uns Ihre wichtigsten Angaben direkt über die Website. Wir melden uns anschließend persönlich bei Ihnen.</p>
+      </div>
+      <div class="form-card">
+        <form id="applicationForm">
+          <div class="form-grid">
+            <div class="field"><label for="appName">Name *</label><input id="appName" name="name" required autocomplete="name"></div>
+            <div class="field"><label for="appEmail">E-Mail *</label><input id="appEmail" name="email" type="email" required autocomplete="email"></div>
+            <div class="field"><label for="appPhone">Telefon</label><input id="appPhone" name="phone" type="tel" autocomplete="tel"></div>
+            <div class="field"><label for="appQualification">Qualifikation *</label><select id="appQualification" name="qualification" required><option value="">Bitte auswählen</option><option>Pflegefachfrau / Pflegefachmann</option><option>Gesundheits- und Krankenpflege</option><option>Altenpflege</option><option>Kinderkrankenpflege</option><option>Andere Qualifikation</option></select></div>
+            <div class="field"><label for="appHours">Gewünschter Umfang</label><select id="appHours" name="hours"><option value="">Keine Angabe</option><option>Vollzeit</option><option>Teilzeit</option><option>Minijob</option><option>Nach Absprache</option></select></div>
+            <div class="field"><label for="appExperience">Intensivpflege-Erfahrung</label><select id="appExperience" name="experience"><option value="">Keine Angabe</option><option>Ja</option><option>Nein</option><option>In Weiterbildung</option></select></div>
+            <div class="field">
+              <label for="appTraining">Weiterbildung / Zusatzqualifikation</label>
+              <select id="appTraining" name="training">
+                <option value="">Keine Angabe</option>
+                <option>Basiskurs Außerklinische Intensivpflege</option>
+                <option>Pflegeexperte außerklinische Intensivpflege</option>
+                <option>Beatmungspflege</option>
+                <option>Trachealkanülenmanagement</option>
+                <option>Wundmanagement</option>
+                <option>Palliative Care</option>
+                <option>Praxisanleitung</option>
+                <option>Pflegedienstleitung / PDL</option>
+                <option>Andere Weiterbildung</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="appTrainingOther">Weitere / andere Weiterbildung</label>
+              <input id="appTrainingOther" name="trainingOther" type="text" placeholder="Falls nicht aufgeführt, hier ergänzen">
+            </div>
+            <div class="field full"><label for="appMessage">Nachricht</label><textarea id="appMessage" name="message" placeholder="Erzählen Sie uns kurz etwas über sich oder Ihre Wünsche."></textarea></div>
+          </div>
+          <label class="consent"><input id="appConsent" type="checkbox" required><span>Ich stimme zu, dass meine Angaben zur Bearbeitung meiner Bewerbung verarbeitet werden. Weitere Informationen finden Sie in der <a href="https://www.intensivpflege-halle.de/dsgvo/" target="_blank" rel="noopener noreferrer">Datenschutzerklärung</a>.</span></label>
+          <button class="btn btn-primary form-submit" id="applicationSubmit" type="submit">Bewerbung absenden</button>
+          <div class="form-note">Bewerbungsunterlagen wie Lebenslauf und Zeugnisse können nach der ersten Kontaktaufnahme nachgereicht werden.</div>
+          <div id="applicationMessage" class="form-message"></div>
+        </form>
+      </div>
+    </section>
+
+    <section class="section" id="beschwerde" style="padding-top:30px">
+      <div class="section-head">
+        <div class="section-kicker">Anonyme Beschwerde</div>
+        <h2>Hinweise und Beschwerden anonym mitteilen.</h2>
+        <p class="section-lead">Patienten, Angehörige, Mitarbeitende und andere Beteiligte können uns hier vertraulich einen Hinweis oder eine Beschwerde senden.</p>
+      </div>
+      <div class="form-card">
+        <div class="anonymous-badge">🛡️ Keine Namens- oder E-Mail-Angabe erforderlich</div>
+        <form id="complaintForm">
+          <div class="form-grid">
+            <div class="field"><label for="complaintCategory">Kategorie *</label><select id="complaintCategory" name="category" required><option value="">Bitte auswählen</option><option>Pflege / Versorgung</option><option>Kommunikation</option><option>Mitarbeitende</option><option>Organisation</option><option>Datenschutz</option><option>Sonstiges</option></select></div>
+            <div class="field"><label for="complaintRelation">Ich bin …</label><select id="complaintRelation" name="relation"><option value="">Keine Angabe</option><option>Patient/in</option><option>Angehörige/r</option><option>Mitarbeiter/in</option><option>Kooperationspartner/in</option><option>Sonstige Person</option></select></div>
+            <div class="field full"><label for="complaintText">Ihre Nachricht *</label><textarea id="complaintText" name="message" required placeholder="Bitte schildern Sie Ihr Anliegen so konkret wie möglich. Vermeiden Sie persönliche Angaben, wenn Sie anonym bleiben möchten."></textarea></div>
+          </div>
+          <button class="btn btn-primary form-submit" id="complaintSubmit" type="submit">Anonym absenden</button>
+          <div class="form-note">Das Formular fragt keinen Namen und keine E-Mail-Adresse ab. Bitte tragen Sie im Freitext keine personenbezogenen Angaben ein, wenn Sie anonym bleiben möchten.</div>
+          <div id="complaintMessage" class="form-message"></div>
+        </form>
+      </div>
+    </section>
+
+    <section class="section" id="kontakt" style="padding-top:30px">
+      <div class="section-head">
+        <div class="section-kicker">Kontakt</div>
+        <h2>Wir sind für Ihre Fragen da.</h2>
+        <p class="section-lead">Ob neue Versorgung, Pflegedienstwechsel, Bewerbung oder allgemeine Anfrage – sprechen Sie uns an.</p>
+      </div>
+      <div class="contact-grid">
+        <div class="contact-card"><small>Telefon</small><strong>03493 82 38 868</strong><a href="tel:+4934938238868">Jetzt anrufen →</a></div>
+        <div class="contact-card"><small>E-Mail</small><strong>intensivpflegehalle@gmail.com</strong><a href="mailto:intensivpflegehalle@gmail.com">E-Mail schreiben →</a></div>
+        <div class="contact-card"><small>Hauptsitz</small><strong>Wilhelm-von-Klewiz-Straße 11<br>06132 Halle (Saale)</strong><span style="color:var(--muted)">Intensivpflege-Halle-GmbH</span></div>
+      </div>
+    </section>
+
+    <div class="cta">
+      <div class="cta-inner">
+        <div>
+          <h3>Internes Qualitätsmanagement</h3>
+          <p>Mitarbeiter gelangen hier direkt zum geschützten QM-Portal der Intensivpflege-Halle-GmbH.</p>
+        </div>
+        <a class="btn" href="https://christiandiebner86-cpu.github.io/" target="_blank" rel="noopener noreferrer">🔐 Zum QM-Portal</a>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div>
+        <img class="footer-logo" src="halle-logo.png" alt="Intensivpflege-Halle-GmbH" />
+        <div>Intensivpflege-Halle-GmbH<br>Wilhelm-von-Klewiz-Straße 11 · 06132 Halle (Saale)</div>
+      </div>
+      <div class="footer-links">
+        <a href="https://www.intensivpflege-halle.de/impressum/" target="_blank" rel="noopener noreferrer">Impressum</a>
+        <a href="https://www.intensivpflege-halle.de/dsgvo/" target="_blank" rel="noopener noreferrer">Datenschutz</a>
+        <a href="https://christiandiebner86-cpu.github.io/" target="_blank" rel="noopener noreferrer">QM-Portal</a>
+      </div>
+    </div>
+    <div class="footer-bottom">© Intensivpflege-Halle-GmbH · Moderner Website-Entwurf</div>
+  </footer>
+
+  <script>
+    const sectionLinks = Array.from(document.querySelectorAll('.nav a[href^="#"]'));
+    sectionLinks.forEach(function(link){
+      link.addEventListener('click', function(){
+        sectionLinks.forEach(function(item){ item.classList.remove('active'); });
+        link.classList.add('active');
+      });
+    });
+
+    const observedSections = sectionLinks
+      .map(function(link){ return document.querySelector(link.getAttribute('href')); })
+      .filter(Boolean);
+
+    const sectionObserver = new IntersectionObserver(function(entries){
+      const visible = entries
+        .filter(function(entry){ return entry.isIntersecting; })
+        .sort(function(a,b){ return b.intersectionRatio - a.intersectionRatio; })[0];
+      if(!visible) return;
+      const current = document.querySelector('.nav a[href="#' + visible.target.id + '"]');
+      if(!current) return;
+      sectionLinks.forEach(function(item){ item.classList.remove('active'); });
+      current.classList.add('active');
+      current.scrollIntoView({behavior:'smooth', block:'nearest', inline:'center'});
+    }, {rootMargin:'-25% 0px -55% 0px', threshold:[0,.15,.35,.6]});
+
+    observedSections.forEach(function(section){ sectionObserver.observe(section); });
+
+    const WEBSITE_SUPABASE_URL = "https://syvcomshcexhnxhplqhx.supabase.co";
+    const WEBSITE_SUPABASE_KEY = "sb_publishable_SQKuCSBTQK0uE6d2nfM5hg_UEeo8x2z";
+    const websiteSupabase = window.supabase ? window.supabase.createClient(WEBSITE_SUPABASE_URL, WEBSITE_SUPABASE_KEY) : null;
+
+    function showFormMessage(id, text, type){
+      const box = document.getElementById(id);
+      box.textContent = text;
+      box.className = 'form-message ' + type;
+    }
+
+    document.getElementById('complaintForm').addEventListener('submit', async function(event){
+      event.preventDefault();
+      const button = document.getElementById('complaintSubmit');
+      button.disabled = true;
+      button.textContent = 'Wird gesendet …';
+      try {
+        if(!websiteSupabase) throw new Error('Formularservice nicht verfügbar.');
+        const { error } = await websiteSupabase.from('website_complaints').insert({
+          category: document.getElementById('complaintCategory').value,
+          relation: document.getElementById('complaintRelation').value || null,
+          message: document.getElementById('complaintText').value.trim()
+        });
+        if(error) throw error;
+        this.reset();
+        showFormMessage('complaintMessage','Vielen Dank. Ihre anonyme Nachricht wurde übermittelt.','success');
+      } catch(error){
+        console.error(error);
+        showFormMessage('complaintMessage','Die Nachricht konnte noch nicht gesendet werden. Bitte versuchen Sie es später erneut.','error');
+      } finally {
+        button.disabled = false;
+        button.textContent = 'Anonym absenden';
+      }
+    });
+
+    document.getElementById('applicationForm').addEventListener('submit', async function(event){
+      event.preventDefault();
+      const button = document.getElementById('applicationSubmit');
+      button.disabled = true;
+      button.textContent = 'Wird gesendet …';
+      try {
+        if(!websiteSupabase) throw new Error('Formularservice nicht verfügbar.');
+        const { error } = await websiteSupabase.from('website_applications').insert({
+          name: document.getElementById('appName').value.trim(),
+          email: document.getElementById('appEmail').value.trim(),
+          phone: document.getElementById('appPhone').value.trim() || null,
+          qualification: document.getElementById('appQualification').value,
+          hours: document.getElementById('appHours').value || null,
+          experience: document.getElementById('appExperience').value || null,
+          message: [
+            (() => {
+              const training = document.getElementById('appTraining').value;
+              const otherTraining = document.getElementById('appTrainingOther').value.trim();
+              const values = [training, otherTraining].filter(Boolean);
+              return values.length ? 'Weiterbildungen / Zusatzqualifikationen: ' + values.join(', ') : '';
+            })(),
+            document.getElementById('appMessage').value.trim() ? 'Nachricht: ' + document.getElementById('appMessage').value.trim() : ''
+          ].filter(Boolean).join('\n\n') || null
+        });
+        if(error) throw error;
+        this.reset();
+        showFormMessage('applicationMessage','Vielen Dank für Ihre Bewerbung. Wir melden uns bei Ihnen.','success');
+      } catch(error){
+        console.error(error);
+        showFormMessage('applicationMessage','Die Bewerbung konnte noch nicht gesendet werden. Bitte versuchen Sie es später erneut.','error');
+      } finally {
+        button.disabled = false;
+        button.textContent = 'Bewerbung absenden';
+      }
+    });
+  </script>
+</body>
+</html>
