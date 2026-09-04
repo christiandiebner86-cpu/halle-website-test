@@ -309,6 +309,7 @@ footer{
     <a href="#leistungen">Leistungen</a>
     <a href="#karriere">Karriere</a>
     <a href="#bewerbung">Bewerbung</a>
+    <a href="#beschwerde">Beschwerde</a>
     <a href="#kontakt">Kontakt</a>
   </nav>
 </header>
@@ -435,6 +436,23 @@ footer{
     </div>
   </section>
 
+  <section class="section form-section" id="beschwerde">
+    <div class="section-kicker">Anonyme Beschwerde</div>
+    <h2 class="section-title">Hinweise und Beschwerden vertraulich mitteilen.</h2>
+    <div class="form-card">
+      <div class="anon">🛡️ Keine Namens- oder E-Mail-Angabe erforderlich</div>
+      <form id="complaintForm">
+        <div class="form-grid">
+          <div class="field"><label for="complaintCategory">Kategorie *</label><select id="complaintCategory" required><option value="">Bitte auswählen</option><option>Pflege / Versorgung</option><option>Kommunikation</option><option>Mitarbeitende</option><option>Organisation</option><option>Datenschutz</option><option>Sonstiges</option></select></div>
+          <div class="field"><label for="complaintRelation">Ich bin …</label><select id="complaintRelation"><option value="">Keine Angabe</option><option>Patient/in</option><option>Angehörige/r</option><option>Mitarbeiter/in</option><option>Kooperationspartner/in</option><option>Sonstige Person</option></select></div>
+          <div class="field full"><label for="complaintText">Ihre Nachricht *</label><textarea id="complaintText" required placeholder="Bitte schildern Sie Ihr Anliegen. Vermeiden Sie persönliche Angaben, wenn Sie anonym bleiben möchten."></textarea></div>
+        </div>
+        <button class="btn btn-green" id="complaintSubmit" type="submit">Anonym absenden</button>
+        <div id="complaintMessage" class="form-message"></div>
+      </form>
+    </div>
+  </section>
+
   <section class="section" id="kontakt">
     <div class="section-kicker">Kontakt</div>
     <h2 class="section-title">Wir sind für Ihre Fragen da.</h2>
@@ -523,6 +541,18 @@ footer{
       b.disabled=false;b.textContent='Jetzt bewerben ✈';
     }
   });
+
+  document.getElementById('complaintForm').addEventListener('submit', async function(e){
+    e.preventDefault();
+    const b=document.getElementById('complaintSubmit');
+    b.disabled=true;b.textContent='Wird gesendet …';
+    try{
+      if(!websiteSupabase) throw new Error('Formularservice nicht verfügbar');
+      const {error}=await websiteSupabase.from('website_complaints').insert({
+        category:document.getElementById('complaintCategory').value,
+        relation:document.getElementById('complaintRelation').value||null,
+        message:document.getElementById('complaintText').value.trim()
+      });
       if(error) throw error;
       this.reset();
       showFormMessage('complaintMessage','Vielen Dank. Ihre anonyme Nachricht wurde übermittelt.','success');
