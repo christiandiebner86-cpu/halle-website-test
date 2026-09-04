@@ -5,7 +5,16 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="description" content="Intensivpflege-Halle-GmbH – außerklinische Intensivpflege in Halle (Saale) und Umgebung.">
   <title>Intensivpflege-Halle-GmbH</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+  const privacyFooterLink = document.getElementById('privacyFooterLink');
+  const privacyDetails = document.querySelector('.privacy-details');
+  if (privacyFooterLink && privacyDetails) {
+    privacyFooterLink.addEventListener('click', () => {
+      privacyDetails.open = true;
+    });
+  }
+
+</script>
   <style>
     :root{
       --navy:#0a4774;
@@ -290,6 +299,88 @@ footer{
   .quick-form #applicationSubmit{grid-column:auto}
 }
 
+
+/* Aufklappbarer Datenschutzbereich */
+.privacy-section{
+  max-width:1220px;
+  margin:0 auto 45px;
+  padding:0 24px;
+}
+.privacy-details{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:18px;
+  box-shadow:0 10px 26px rgba(8,55,88,.07);
+  overflow:hidden;
+}
+.privacy-details summary{
+  list-style:none;
+  cursor:pointer;
+  padding:18px 22px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  color:var(--navy);
+  font-weight:950;
+  font-size:18px;
+}
+.privacy-details summary::-webkit-details-marker{display:none}
+.privacy-details summary::after{
+  content:"+";
+  width:34px;
+  height:34px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:var(--green-soft);
+  color:var(--green-dark);
+  font-size:24px;
+  line-height:1;
+}
+.privacy-details[open] summary::after{content:"−"}
+.privacy-content{
+  border-top:1px solid var(--line);
+  padding:18px;
+  background:#f8fbfc;
+}
+.privacy-content p{
+  margin:0 0 14px;
+  color:var(--muted);
+  line-height:1.6;
+}
+.privacy-text{
+  color:#425d6d;
+  line-height:1.7;
+  font-size:15px;
+}
+.privacy-text h3{
+  margin:24px 0 8px;
+  color:var(--navy);
+  font-size:20px;
+}
+.privacy-text h4{
+  margin:18px 0 6px;
+  color:#2d596f;
+  font-size:16px;
+}
+.privacy-text p{margin:0 0 12px}
+.privacy-text ul{margin:6px 0 14px;padding-left:22px}
+.privacy-text a{color:var(--green-dark);font-weight:800;text-decoration:underline}
+.privacy-note{
+  margin:16px 0;
+  padding:13px 15px;
+  border-radius:12px;
+  background:var(--green-soft);
+  color:#315d28;
+  font-weight:750;
+}
+@media(max-width:700px){
+  .privacy-section{padding:0 16px}
+  .privacy-details summary{font-size:16px;padding:16px}
+  .privacy-content{padding:15px}
+}
+
 </style>
 </head>
 <body>
@@ -456,6 +547,85 @@ footer{
   </div>
 </main>
 
+  <section class="privacy-section" id="datenschutz">
+    <details class="privacy-details">
+      <summary>🔒 Datenschutzerklärung anzeigen</summary>
+      <div class="privacy-content">
+        <div class="privacy-text">
+          <h3>Datenschutzerklärung</h3>
+          <p>Wir nehmen den Schutz Ihrer personenbezogenen Daten ernst. Nachfolgend informieren wir darüber, welche Daten beim Besuch dieser Website und bei der Nutzung der Schnellbewerbung verarbeitet werden.</p>
+
+          <h3>1. Verantwortliche Stelle</h3>
+          <p>
+            Intensivpflege-Halle-GmbH<br>
+            Fritz-Reuter-Straße 42<br>
+            06792 Sandersdorf-Brehna<br>
+            Telefon: 03493 82 38 868<br>
+            E-Mail: <a href="mailto:intensivpflegehalle@gmail.com">intensivpflegehalle@gmail.com</a>
+          </p>
+
+          <h3>2. Datenschutzbeauftragter</h3>
+          <p>
+            Egbert Schindler<br>
+            Fritz-Reuter-Straße 42<br>
+            06792 Sandersdorf-Brehna<br>
+            Telefon: 03493 82 38 868<br>
+            E-Mail: <a href="mailto:egbert.schindler@web.de">egbert.schindler@web.de</a>
+          </p>
+
+          <h3>3. Aufruf und Bereitstellung der Website</h3>
+          <p>Beim Aufruf der Website werden durch den Hosting-Provider technisch erforderliche Zugriffsdaten verarbeitet. Dazu können insbesondere IP-Adresse, Datum und Uhrzeit des Abrufs, aufgerufene Seite bzw. Datei, Browsertyp, Betriebssystem und Referrer-Informationen gehören. Die Verarbeitung dient der technischen Bereitstellung, Stabilität und Sicherheit der Website.</p>
+          <p>Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO. Unser berechtigtes Interesse liegt in einem sicheren und technisch fehlerfreien Betrieb der Website.</p>
+
+          <h3>4. Schnellbewerbung</h3>
+          <p>Über die Schnellbewerbung können Sie sich direkt bei uns bewerben. Dabei verarbeiten wir die von Ihnen eingegebenen Angaben, insbesondere:</p>
+          <ul>
+            <li>Name</li>
+            <li>Telefonnummer</li>
+            <li>berufliche Qualifikation</li>
+            <li>Angaben zur AKI-Weiterbildung</li>
+            <li>gewünschter Arbeitsort bzw. Einsatzbereich</li>
+            <li>freiwillige Nachricht, sofern Sie eine Nachricht eintragen</li>
+          </ul>
+          <p>Die Angaben werden ausschließlich zur Durchführung des Bewerbungsverfahrens und zur Kontaktaufnahme im Zusammenhang mit Ihrer Bewerbung verarbeitet. Bitte tragen Sie in das Freitextfeld keine Gesundheitsdaten oder sonstigen besonders sensiblen Informationen ein, sofern diese für Ihre Bewerbung nicht erforderlich sind.</p>
+          <p>Die Verarbeitung von Bewerberdaten erfolgt zur Entscheidung über die Begründung eines Beschäftigungsverhältnisses, insbesondere auf Grundlage von § 26 Abs. 1 BDSG sowie – soweit anwendbar – Art. 6 Abs. 1 lit. b DSGVO.</p>
+          <p>Bewerbungsdaten werden nur so lange gespeichert, wie dies für das Bewerbungsverfahren und zur Erfüllung gesetzlicher Pflichten bzw. zur Abwehr möglicher Rechtsansprüche erforderlich ist. Eine darüber hinausgehende Speicherung, etwa für eine spätere Kontaktaufnahme, erfolgt nur auf einer dafür geeigneten Rechtsgrundlage.</p>
+
+          <h3>5. Supabase</h3>
+          <p>Für die technische Übermittlung und Speicherung der Schnellbewerbung verwenden wir Supabase. Dabei werden die von Ihnen im Bewerbungsformular eingegebenen Daten an die für unsere Website eingerichtete Supabase-Datenbank übertragen.</p>
+          <p>Anbieter ist Supabase, Inc. Supabase stellt unter anderem Datenbank- und API-Dienste bereit. Je nach technischer Konfiguration können dabei auch technische Verbindungsdaten verarbeitet werden. Wir beschränken den Zugriff auf die Bewerbungsdaten durch technische Zugriffsregeln und verwenden im Browser ausschließlich einen dafür vorgesehenen öffentlichen Zugriffsschlüssel; administrative Zugangsdaten werden nicht in der Website veröffentlicht.</p>
+          <p>Weitere Informationen finden Sie in den Datenschutz- und Sicherheitsinformationen von Supabase.</p>
+
+          <h3>6. JavaScript-Bibliothek über jsDelivr</h3>
+          <p>Die für die Verbindung mit Supabase benötigte JavaScript-Bibliothek wird über das Content Delivery Network jsDelivr geladen. Beim Abruf dieser Datei wird technisch bedingt eine Verbindung zu Servern des CDN-Anbieters hergestellt. Dabei kann insbesondere Ihre IP-Adresse verarbeitet werden. Die Einbindung dient der zuverlässigen und schnellen Bereitstellung der für die Schnellbewerbung erforderlichen Software.</p>
+          <p>Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO. Unser berechtigtes Interesse liegt in der sicheren und funktionsfähigen Bereitstellung des Bewerbungsformulars.</p>
+
+          <h3>7. E-Mail und Telefon</h3>
+          <p>Wenn Sie uns per E-Mail oder telefonisch kontaktieren, verarbeiten wir die von Ihnen übermittelten Daten zur Bearbeitung Ihrer Anfrage und für mögliche Anschlussfragen. Rechtsgrundlage ist je nach Inhalt der Anfrage Art. 6 Abs. 1 lit. b DSGVO oder Art. 6 Abs. 1 lit. f DSGVO.</p>
+
+          <h3>8. Cookies, Analyse und externe Medien</h3>
+          <p>In der aktuell vorgesehenen Version dieser Website setzen wir selbst keine Analysewerkzeuge wie Google Analytics oder etracker ein und binden keine YouTube-Videos oder Google-Maps-Karte unmittelbar in die Seite ein. Sollten solche Dienste später ergänzt werden, wird diese Datenschutzerklärung vor deren Einsatz entsprechend aktualisiert und – soweit erforderlich – eine Einwilligung eingeholt.</p>
+
+          <h3>9. Ihre Rechte</h3>
+          <p>Sie haben im Rahmen der gesetzlichen Voraussetzungen insbesondere das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung und Datenübertragbarkeit. Außerdem können Sie einer Verarbeitung widersprechen, soweit diese auf Art. 6 Abs. 1 lit. f DSGVO beruht.</p>
+          <p>Sofern eine Verarbeitung auf Ihrer Einwilligung beruht, können Sie diese Einwilligung jederzeit mit Wirkung für die Zukunft widerrufen. Die Rechtmäßigkeit der Verarbeitung bis zum Widerruf bleibt unberührt.</p>
+          <p>Darüber hinaus besteht ein Beschwerderecht bei einer zuständigen Datenschutzaufsichtsbehörde.</p>
+
+          <h3>10. SSL-/TLS-Verschlüsselung</h3>
+          <p>Diese Website soll ausschließlich verschlüsselt über HTTPS bereitgestellt werden. Dadurch werden Daten, die zwischen Ihrem Browser und der Website übertragen werden, während der Übertragung geschützt.</p>
+
+          <h3>11. Aktualität</h3>
+          <p>Wir passen diese Datenschutzerklärung an, wenn sich eingesetzte Dienste, Funktionen oder rechtliche Anforderungen ändern.</p>
+
+          <div class="privacy-note">
+            Stand: September 2026
+          </div>
+        </div>
+      </div>
+    </details>
+  </section>
+
+
 <footer>
   <div class="footer-inner">
     <div>
@@ -464,7 +634,7 @@ footer{
     </div>
     <div class="footer-links">
       <a href="https://www.intensivpflege-halle.de/impressum/" target="_blank" rel="noopener">Impressum</a>
-      <a href="https://www.intensivpflege-halle.de/dsgvo/" target="_blank" rel="noopener">Datenschutz</a>
+      <a href="#datenschutz" id="privacyFooterLink">Datenschutz</a>
       <a href="https://christiandiebner86-cpu.github.io/" target="_blank" rel="noopener">QM Halle</a>
       <a href="https://christiandiebner86-cpu.github.io/schindler-qm-portal/" target="_blank" rel="noopener">QM Schindler</a>
     </div>
