@@ -7,332 +7,41 @@
   <title>Intensivpflege-Halle-GmbH</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    :root{
-      --navy:#0a4774;
-      --navy-dark:#07375c;
-      --green:#71bf2b;
-      --green-dark:#3f931d;
-      --ink:#133952;
-      --muted:#6a7f8d;
-      --line:#d8e3e8;
-      --bg:#f6f8fa;
-      --white:#fff;
-      --shadow:0 18px 42px rgba(8,55,88,.11);
-      --radius:22px;
-      --green-soft:#e9f6df;
-    }
-    *{box-sizing:border-box}
-    html{scroll-behavior:smooth;scroll-padding-top:120px}
-    body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:var(--ink);background:var(--bg)}
-    a{text-decoration:none;color:inherit}
-    button,input,select,textarea{font:inherit}
-    header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.97);backdrop-filter:blur(12px);border-bottom:1px solid rgba(8,55,88,.08)}
-    .header-inner{max-width:1420px;margin:auto;padding:14px 26px 10px;display:grid;grid-template-columns:250px 1fr auto;gap:24px;align-items:center}
-    .brand img{width:220px;display:block}
-    .qm-links{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
-    .qm-btn{border:1.5px solid #8cbd76;border-radius:8px;padding:10px 16px;color:#357b26;background:#fff;font-weight:850;font-size:14px}
-    .phone{font-weight:950;color:var(--green-dark);font-size:18px;white-space:nowrap}
-    nav{max-width:950px;margin:0 auto;padding:0 18px 12px;display:flex;gap:34px;justify-content:center;overflow-x:auto;scrollbar-width:none}
-    nav::-webkit-scrollbar{display:none}
-    nav a{white-space:nowrap;font-weight:850;color:#17364f;padding:8px 2px;border-bottom:3px solid transparent}
-    nav a:hover,nav a.active{color:var(--green-dark);border-color:var(--green)}
-    .hero{position:relative;overflow:hidden;background:linear-gradient(90deg,#fbfcfd 0%,#f7fbf5 43%,#edf7e8 100%)}
-    .hero-inner{max-width:1420px;margin:auto;min-height:610px;display:grid;grid-template-columns:.9fr 1.1fr;align-items:stretch}
-    .hero-copy{padding:80px 38px 90px 50px;position:relative;z-index:2;display:flex;flex-direction:column;justify-content:center}
-    h1{margin:0 0 18px;color:var(--navy);font-size:clamp(48px,5.3vw,78px);line-height:1.04;letter-spacing:-.045em}
-    h1::after{content:"";display:block;width:86px;height:5px;margin-top:18px;border-radius:999px;background:linear-gradient(90deg,var(--green-dark),var(--green))}
-    .hero-sub{font-size:25px;font-weight:850;color:var(--green-dark);margin-bottom:18px}
-    .hero-copy p{font-size:19px;line-height:1.65;max-width:650px;margin:0 0 28px}
-    .hero-actions{display:flex;gap:14px;flex-wrap:wrap}
-    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 22px;border-radius:12px;border:0;cursor:pointer;font-weight:950;text-decoration:none}
-    .btn-primary{background:linear-gradient(135deg,var(--green-dark),var(--green));color:#fff}
-    .btn-green{background:linear-gradient(135deg,var(--green-dark),var(--green));color:#fff}
-    .btn-outline{background:#fff;border:1.5px solid #8ba4b4;color:var(--navy)}
-    .hero-photo{position:relative;min-height:610px;overflow:hidden}
-    .hero-photo img{width:100%;height:100%;object-fit:cover;object-position:center}
-    .hero-photo:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(247,250,251,.98) 0%,rgba(247,250,251,.40) 17%,rgba(247,250,251,0) 43%);pointer-events:none}
-    .benefits-wrap{max-width:1320px;margin:-52px auto 35px;padding:0 24px;position:relative;z-index:4}
-    .benefits{background:#fff;border-radius:18px;box-shadow:var(--shadow);display:grid;grid-template-columns:repeat(5,1fr);padding:18px 12px}
-    .benefit{padding:9px 18px;display:flex;gap:12px;align-items:center}
-    .benefit+.benefit{border-left:1px solid var(--line)}
-    .benefit-icon{font-size:30px;color:var(--green-dark)}
-    .benefit strong{display:block;color:var(--navy);font-size:16px}
-    .benefit span{font-size:13px;color:var(--muted)}
-    .quickapply-wrap{max-width:1420px;margin:0 auto 60px;padding:0 24px}
-    .quickapply{background:linear-gradient(125deg,#073f69 0%,#0c6284 58%,#4a9923 145%);border-radius:18px;padding:28px 32px;color:#fff;display:grid;grid-template-columns:1fr 1.65fr;gap:28px;box-shadow:var(--shadow)}
-    .quickapply h2{font-size:30px;color:#b8ef74;margin:4px 0 12px}
-    .quickapply p{margin:0;color:#e0edf4;line-height:1.55}
-    .quick-form{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
-    .quick-form input,.quick-form select,.quick-form textarea{width:100%;border:0;border-radius:10px;padding:13px;background:#fff;color:#16364d;outline:none}
-    .quick-form textarea{min-height:108px;resize:vertical;grid-row:span 2}
-    .quick-form #applicationSubmit{grid-column:2 / 4;background:linear-gradient(135deg,#68b82d,#8bd446);color:#fff}
-    .privacy{grid-column:1/-1;font-size:12px;color:#d9e8ef}
-    .form-message{display:none;grid-column:1/-1;padding:10px 12px;border-radius:9px}
-    .form-message.success{display:block;background:#dff4d8;color:#2e6d16}
-    .form-message.error{display:block;background:#fde7e7;color:#962c2c}
-    .section{max-width:1220px;margin:auto;padding:64px 24px}
-    .section-kicker{color:var(--green-dark);font-size:13px;font-weight:950;text-transform:uppercase;letter-spacing:.05em}
-    h2.section-title{font-size:clamp(34px,4vw,48px);margin:7px 0 12px;color:var(--navy);letter-spacing:-.03em}
-    .lead{font-size:17px;color:var(--muted);max-width:780px;line-height:1.65}
-    .services{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:28px}
-    .service{background:#fff;border:1px solid var(--line);border-top:4px solid #74bd37;border-radius:18px;padding:24px;box-shadow:0 10px 24px rgba(8,55,88,.06)}
-    .service .icon{font-size:34px;margin-bottom:12px;color:var(--green-dark)}
-    .service h3{margin:0 0 8px;color:var(--navy)}
-    .service p{margin:0;color:var(--muted);line-height:1.55}
-    .career{max-width:1220px;margin:12px auto 36px;padding:0 24px}
-    .career-inner{display:grid;grid-template-columns:1.1fr .9fr;overflow:hidden;background:linear-gradient(135deg,#073f69 0%,#0a6388 62%,#4a9b25 145%);border-radius:24px;color:#fff;box-shadow:var(--shadow)}
-    .career-copy{padding:38px}
-    .career-copy h2{font-size:40px;line-height:1.08;margin:5px 0 13px;color:#fff}
-    .career-copy h2 span{color:#a9e75e}
-    .salary{display:grid;grid-template-columns:1.15fr .85fr;gap:12px;margin:20px 0}
-    .salary-main{background:#fff;color:var(--navy);border-radius:14px;padding:15px}
-    .salary-main strong{font-size:29px;color:var(--green-dark);display:block}
-    .salary-extra{background:rgba(255,255,255,.12);border-radius:14px;padding:15px;display:flex;flex-direction:column;justify-content:center}
-    .career-list{display:grid;grid-template-columns:1fr 1fr;gap:10px 18px;margin:18px 0 24px}
-    .career-list div:before{content:"✓";margin-right:8px;color:#9fe34d;font-weight:950}
-    .career-img{min-height:460px}
-    .career-img img{width:100%;height:100%;object-fit:cover}
-    .fineprint{font-size:11px;color:#c7dce6;margin-top:11px;line-height:1.45}
-    .verband{max-width:1220px;margin:0 auto 70px;padding:0 24px}
-    .verband-card{background:#fff;border:1px solid var(--line);border-radius:22px;padding:26px;box-shadow:var(--shadow);display:grid;grid-template-columns:230px 1fr;gap:28px;align-items:center}
-    .verband-logo{display:flex;align-items:center;justify-content:center;background:#fff;border:1px solid #e1e9ec;border-radius:16px;padding:14px;min-height:150px;transition:.18s ease}
-    .verband-logo:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(8,55,88,.10)}
-    .verband-logo img{max-width:100%;max-height:130px;display:block}
-    .verband-card h2{margin:5px 0 10px;color:var(--navy);font-size:clamp(28px,3vw,40px)}
-    .verband-card p{margin:0 0 14px;color:var(--muted);line-height:1.6}
-    .tarif-note{display:inline-block;background:var(--green-soft);color:#315d28;padding:9px 12px;border-radius:12px;font-weight:800}
-    .contact-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-top:24px}
-    .contact{background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px}
-    .contact small{color:var(--green-dark);font-weight:950;text-transform:uppercase}
-    .contact strong{display:block;margin:7px 0;color:var(--navy);font-size:18px}
-    .qm-bottom{max-width:1220px;margin:0 auto 55px;padding:0 24px}
-    .qm-bottom-inner{background:linear-gradient(135deg,#073f69 0%,#0a6388 66%,#4a9b25 150%);border-radius:20px;padding:25px;display:flex;align-items:center;justify-content:space-between;gap:18px;color:#fff}
-    .qm-bottom h3{margin:0 0 4px}
-    .privacy-section{max-width:1220px;margin:0 auto 45px;padding:0 24px}
-    .privacy-details{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 10px 26px rgba(8,55,88,.07);overflow:hidden}
-    .privacy-details summary{list-style:none;cursor:pointer;padding:18px 22px;display:flex;align-items:center;justify-content:space-between;gap:16px;color:var(--navy);font-weight:950;font-size:18px}
-    .privacy-details summary::-webkit-details-marker{display:none}
-    .privacy-details summary::after{content:"+";width:34px;height:34px;display:grid;place-items:center;border-radius:50%;background:var(--green-soft);color:var(--green-dark);font-size:24px;line-height:1}
-    .privacy-details[open] summary::after{content:"−"}
-    .privacy-content{border-top:1px solid var(--line);padding:18px;background:#f8fbfc}
-    .privacy-content p{margin:0 0 14px;color:var(--muted);line-height:1.6}
-    .privacy-text{color:#425d6d;line-height:1.7;font-size:15px}
-    .privacy-text h3{margin:24px 0 8px;color:var(--navy);font-size:20px}
-    .privacy-text p{margin:0 0 12px}
-    .privacy-text ul{margin:6px 0 14px;padding-left:22px}
-    .privacy-text a{color:var(--green-dark);font-weight:800;text-decoration:underline}
-    .privacy-note{margin:16px 0;padding:13px 15px;border-radius:12px;background:var(--green-soft);color:#315d28;font-weight:750}
-    footer{background:linear-gradient(135deg,#052e4c,#0a4f66);color:#fff}
-    .footer-inner{max-width:1220px;margin:auto;padding:34px 24px;display:flex;justify-content:space-between;align-items:center;gap:30px}
-    .footer-inner img{width:280px;display:block}
-    .footer-address{font-weight:800;margin-top:12px}
-    .footer-links{display:flex;gap:16px;flex-wrap:wrap}
-    .footer-links a{font-weight:850}
-    .foot-bottom{background:#04273f;text-align:center;padding:13px;color:#dceaf1;font-size:13px}
-    @media(max-width:1050px){
-      .header-inner{grid-template-columns:1fr auto}
-      .qm-links{grid-column:1/-1;grid-row:2;justify-content:flex-start}
-      .hero-inner,.career-inner{grid-template-columns:1fr}
-      .hero-photo{min-height:430px}.hero-copy{padding-bottom:40px}
-      .benefits{grid-template-columns:repeat(2,1fr)}
-      .benefit+.benefit{border-left:0}.benefit:nth-child(even){border-left:1px solid var(--line)}.benefit:nth-child(n+3){border-top:1px solid var(--line)}
-      .quickapply{grid-template-columns:1fr}.services{grid-template-columns:1fr 1fr}
-    }
-    @media(max-width:700px){
-      .header-inner{padding:10px 15px;grid-template-columns:1fr auto}.brand img{width:165px}.phone{font-size:0}.phone:before{content:"☎";font-size:20px}
-      .qm-links{gap:8px;overflow-x:auto;flex-wrap:nowrap}.qm-btn{font-size:12px;padding:8px 10px;white-space:nowrap}nav{justify-content:flex-start;gap:22px}
-      .hero-inner{min-height:0}.hero-copy{padding:45px 20px 28px}h1{font-size:48px}.hero-sub{font-size:21px}.hero-copy p{font-size:17px}.hero-photo{min-height:320px}
-      .benefits-wrap{margin:-24px auto 28px;padding:0 15px}.benefits{grid-template-columns:1fr}.benefit:nth-child(even){border-left:0}.benefit:nth-child(n+2){border-top:1px solid var(--line)}
-      .quickapply-wrap{padding:0 15px}.quickapply{padding:24px 18px}.quick-form{grid-template-columns:1fr}.quick-form textarea,.quick-form #applicationSubmit{grid-column:auto;grid-row:auto}
-      .services,.career-list,.salary,.contact-grid{grid-template-columns:1fr}.section{padding:50px 16px}.career{padding:0 16px}.career-copy{padding:28px 22px}
-      .verband{padding:0 16px}.verband-card{grid-template-columns:1fr;text-align:center}.verband-logo{min-height:120px}.verband-card .hero-actions{justify-content:center}
-      .footer-inner,.qm-bottom-inner{flex-direction:column;align-items:flex-start}.footer-inner img{width:250px}.privacy-section{padding:0 16px}.privacy-details summary{font-size:16px;padding:16px}.privacy-content{padding:15px}
-    }
+    :root{--navy:#0a4774;--navy-dark:#07375c;--green:#71bf2b;--green-dark:#3f931d;--ink:#133952;--muted:#6a7f8d;--line:#d8e3e8;--bg:#f6f8fa;--white:#fff;--shadow:0 18px 42px rgba(8,55,88,.11);--radius:22px;--green-soft:#e9f6df}
+    *{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:120px}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:var(--ink);background:var(--bg)}a{text-decoration:none;color:inherit}button,input,select,textarea{font:inherit}
+    header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.97);backdrop-filter:blur(12px);border-bottom:1px solid rgba(8,55,88,.08)}.header-inner{max-width:1420px;margin:auto;padding:14px 26px 10px;display:grid;grid-template-columns:250px 1fr auto;gap:24px;align-items:center}.brand img{width:220px;display:block}.qm-links{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}.qm-btn{border:1.5px solid #8cbd76;border-radius:8px;padding:10px 16px;color:#357b26;background:#fff;font-weight:850;font-size:14px}.phone{font-weight:950;color:var(--green-dark);font-size:18px;white-space:nowrap}nav{max-width:1050px;margin:0 auto;padding:0 18px 12px;display:flex;gap:28px;justify-content:center;overflow-x:auto;scrollbar-width:none}nav::-webkit-scrollbar{display:none}nav a{white-space:nowrap;font-weight:850;color:#17364f;padding:8px 2px;border-bottom:3px solid transparent}nav a:hover,nav a.active{color:var(--green-dark);border-color:var(--green)}
+    .hero{position:relative;overflow:hidden;background:linear-gradient(90deg,#fbfcfd 0%,#f7fbf5 43%,#edf7e8 100%)}.hero-inner{max-width:1420px;margin:auto;min-height:610px;display:grid;grid-template-columns:.9fr 1.1fr;align-items:stretch}.hero-copy{padding:80px 38px 90px 50px;position:relative;z-index:2;display:flex;flex-direction:column;justify-content:center}h1{margin:0 0 18px;color:var(--navy);font-size:clamp(48px,5.3vw,78px);line-height:1.04;letter-spacing:-.045em}h1::after{content:"";display:block;width:86px;height:5px;margin-top:18px;border-radius:999px;background:linear-gradient(90deg,var(--green-dark),var(--green))}.hero-sub{font-size:25px;font-weight:850;color:var(--green-dark);margin-bottom:18px}.hero-copy p{font-size:19px;line-height:1.65;max-width:650px;margin:0 0 28px}.hero-actions{display:flex;gap:14px;flex-wrap:wrap}.btn{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 22px;border-radius:12px;border:0;cursor:pointer;font-weight:950;text-decoration:none}.btn-primary,.btn-green{background:linear-gradient(135deg,var(--green-dark),var(--green));color:#fff}.btn-outline{background:#fff;border:1.5px solid #8ba4b4;color:var(--navy)}.hero-photo{position:relative;min-height:610px;overflow:hidden}.hero-photo img{width:100%;height:100%;object-fit:cover;object-position:center}.hero-photo:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(247,250,251,.98) 0%,rgba(247,250,251,.40) 17%,rgba(247,250,251,0) 43%);pointer-events:none}
+    .benefits-wrap{max-width:1320px;margin:-52px auto 35px;padding:0 24px;position:relative;z-index:4}.benefits{background:#fff;border-radius:18px;box-shadow:var(--shadow);display:grid;grid-template-columns:repeat(5,1fr);padding:18px 12px}.benefit{padding:9px 18px;display:flex;gap:12px;align-items:center}.benefit+.benefit{border-left:1px solid var(--line)}.benefit-icon{font-size:30px;color:var(--green-dark)}.benefit strong{display:block;color:var(--navy);font-size:16px}.benefit span{font-size:13px;color:var(--muted)}
+    .quickapply-wrap{max-width:1420px;margin:0 auto 60px;padding:0 24px}.quickapply{background:linear-gradient(125deg,#073f69 0%,#0c6284 58%,#4a9923 145%);border-radius:18px;padding:28px 32px;color:#fff;display:grid;grid-template-columns:1fr 1.65fr;gap:28px;box-shadow:var(--shadow)}.quickapply h2{font-size:30px;color:#b8ef74;margin:4px 0 12px}.quickapply p{margin:0;color:#e0edf4;line-height:1.55}.quick-form{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}.quick-form input,.quick-form select,.quick-form textarea{width:100%;border:0;border-radius:10px;padding:13px;background:#fff;color:#16364d;outline:none}.quick-form textarea{min-height:108px;resize:vertical;grid-row:span 2}.quick-form #applicationSubmit{grid-column:2 / 4;background:linear-gradient(135deg,#68b82d,#8bd446);color:#fff}.privacy{grid-column:1/-1;font-size:12px;color:#d9e8ef}.form-message{display:none;grid-column:1/-1;padding:10px 12px;border-radius:9px}.form-message.success{display:block;background:#dff4d8;color:#2e6d16}.form-message.error{display:block;background:#fde7e7;color:#962c2c}
+    .section{max-width:1220px;margin:auto;padding:64px 24px}.section-kicker{color:var(--green-dark);font-size:13px;font-weight:950;text-transform:uppercase;letter-spacing:.05em}h2.section-title{font-size:clamp(34px,4vw,48px);margin:7px 0 12px;color:var(--navy);letter-spacing:-.03em}.lead{font-size:17px;color:var(--muted);max-width:780px;line-height:1.65}.services{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:28px}.service{background:#fff;border:1px solid var(--line);border-top:4px solid #74bd37;border-radius:18px;padding:24px;box-shadow:0 10px 24px rgba(8,55,88,.06)}.service .icon{font-size:34px;margin-bottom:12px;color:var(--green-dark)}.service h3{margin:0 0 8px;color:var(--navy)}.service p{margin:0;color:var(--muted);line-height:1.55}
+    .training{max-width:1220px;margin:0 auto 70px;padding:0 24px}.training-inner{background:linear-gradient(135deg,#fff,#f4faef);border:1px solid var(--line);border-radius:24px;padding:32px;box-shadow:var(--shadow)}.training-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:28px;align-items:start}.training-list{display:grid;gap:12px;margin-top:22px}.training-item{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 18px;font-weight:850;color:var(--navy)}.campus-card{background:linear-gradient(135deg,#073f69,#0a6388);color:#fff;border-radius:20px;padding:26px}.campus-card h3{font-size:28px;margin:0 0 10px}.campus-card p{color:#dcecf3;line-height:1.6;margin:0 0 20px}.campus-badge{display:inline-block;background:#b8ef74;color:#234d18;padding:7px 11px;border-radius:999px;font-weight:900;margin-bottom:14px}
+    .career{max-width:1220px;margin:12px auto 36px;padding:0 24px}.career-inner{display:grid;grid-template-columns:1.1fr .9fr;overflow:hidden;background:linear-gradient(135deg,#073f69 0%,#0a6388 62%,#4a9b25 145%);border-radius:24px;color:#fff;box-shadow:var(--shadow)}.career-copy{padding:38px}.career-copy h2{font-size:40px;line-height:1.08;margin:5px 0 13px;color:#fff}.career-copy h2 span{color:#a9e75e}.salary{display:grid;grid-template-columns:1.15fr .85fr;gap:12px;margin:20px 0}.salary-main{background:#fff;color:var(--navy);border-radius:14px;padding:15px}.salary-main strong{font-size:29px;color:var(--green-dark);display:block}.salary-extra{background:rgba(255,255,255,.12);border-radius:14px;padding:15px;display:flex;flex-direction:column;justify-content:center}.career-list{display:grid;grid-template-columns:1fr 1fr;gap:10px 18px;margin:18px 0 24px}.career-list div:before{content:"✓";margin-right:8px;color:#9fe34d;font-weight:950}.career-img{min-height:460px}.career-img img{width:100%;height:100%;object-fit:cover}.fineprint{font-size:11px;color:#c7dce6;margin-top:11px;line-height:1.45}.verband{max-width:1220px;margin:0 auto 70px;padding:0 24px}.verband-card{background:#fff;border:1px solid var(--line);border-radius:22px;padding:26px;box-shadow:var(--shadow);display:grid;grid-template-columns:230px 1fr;gap:28px;align-items:center}.verband-logo{display:flex;align-items:center;justify-content:center;background:#fff;border:1px solid #e1e9ec;border-radius:16px;padding:14px;min-height:150px;transition:.18s ease}.verband-logo:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(8,55,88,.10)}.verband-logo img{max-width:100%;max-height:130px;display:block}.verband-card h2{margin:5px 0 10px;color:var(--navy);font-size:clamp(28px,3vw,40px)}.verband-card p{margin:0 0 14px;color:var(--muted);line-height:1.6}.tarif-note{display:inline-block;background:var(--green-soft);color:#315d28;padding:9px 12px;border-radius:12px;font-weight:800}.contact-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-top:24px}.contact{background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px}.contact small{color:var(--green-dark);font-weight:950;text-transform:uppercase}.contact strong{display:block;margin:7px 0;color:var(--navy);font-size:18px}.qm-bottom{max-width:1220px;margin:0 auto 55px;padding:0 24px}.qm-bottom-inner{background:linear-gradient(135deg,#073f69 0%,#0a6388 66%,#4a9b25 150%);border-radius:20px;padding:25px;display:flex;align-items:center;justify-content:space-between;gap:18px;color:#fff}.qm-bottom h3{margin:0 0 4px}
+    .privacy-section{max-width:1220px;margin:0 auto 45px;padding:0 24px}.privacy-details{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 10px 26px rgba(8,55,88,.07);overflow:hidden}.privacy-details summary{list-style:none;cursor:pointer;padding:18px 22px;display:flex;align-items:center;justify-content:space-between;gap:16px;color:var(--navy);font-weight:950;font-size:18px}.privacy-details summary::-webkit-details-marker{display:none}.privacy-details summary::after{content:"+";width:34px;height:34px;display:grid;place-items:center;border-radius:50%;background:var(--green-soft);color:var(--green-dark);font-size:24px;line-height:1}.privacy-details[open] summary::after{content:"−"}.privacy-content{border-top:1px solid var(--line);padding:18px;background:#f8fbfc}.privacy-content p{margin:0 0 14px;color:var(--muted);line-height:1.6}.privacy-text{color:#425d6d;line-height:1.7;font-size:15px}.privacy-text h3{margin:24px 0 8px;color:var(--navy);font-size:20px}.privacy-text p{margin:0 0 12px}.privacy-text ul{margin:6px 0 14px;padding-left:22px}.privacy-text a{color:var(--green-dark);font-weight:800;text-decoration:underline}.privacy-note{margin:16px 0;padding:13px 15px;border-radius:12px;background:var(--green-soft);color:#315d28;font-weight:750}footer{background:linear-gradient(135deg,#052e4c,#0a4f66);color:#fff}.footer-inner{max-width:1220px;margin:auto;padding:34px 24px;display:flex;justify-content:space-between;align-items:center;gap:30px}.footer-inner img{width:280px;display:block}.footer-address{font-weight:800;margin-top:12px}.footer-links{display:flex;gap:16px;flex-wrap:wrap}.footer-links a{font-weight:850}.foot-bottom{background:#04273f;text-align:center;padding:13px;color:#dceaf1;font-size:13px}
+    @media(max-width:1050px){.header-inner{grid-template-columns:1fr auto}.qm-links{grid-column:1/-1;grid-row:2;justify-content:flex-start}.hero-inner,.career-inner,.training-grid{grid-template-columns:1fr}.hero-photo{min-height:430px}.hero-copy{padding-bottom:40px}.benefits{grid-template-columns:repeat(2,1fr)}.benefit+.benefit{border-left:0}.benefit:nth-child(even){border-left:1px solid var(--line)}.benefit:nth-child(n+3){border-top:1px solid var(--line)}.quickapply{grid-template-columns:1fr}.services{grid-template-columns:1fr 1fr}}
+    @media(max-width:700px){.header-inner{padding:10px 15px;grid-template-columns:1fr auto}.brand img{width:165px}.phone{font-size:0}.phone:before{content:"☎";font-size:20px}.qm-links{gap:8px;overflow-x:auto;flex-wrap:nowrap}.qm-btn{font-size:12px;padding:8px 10px;white-space:nowrap}nav{justify-content:flex-start;gap:22px}.hero-inner{min-height:0}.hero-copy{padding:45px 20px 28px}h1{font-size:48px}.hero-sub{font-size:21px}.hero-copy p{font-size:17px}.hero-photo{min-height:320px}.benefits-wrap{margin:-24px auto 28px;padding:0 15px}.benefits{grid-template-columns:1fr}.benefit:nth-child(even){border-left:0}.benefit:nth-child(n+2){border-top:1px solid var(--line)}.quickapply-wrap{padding:0 15px}.quickapply{padding:24px 18px}.quick-form{grid-template-columns:1fr}.quick-form textarea,.quick-form #applicationSubmit{grid-column:auto;grid-row:auto}.services,.career-list,.salary,.contact-grid{grid-template-columns:1fr}.section{padding:50px 16px}.career,.training{padding:0 16px}.career-copy{padding:28px 22px}.training-inner{padding:24px 18px}.verband{padding:0 16px}.verband-card{grid-template-columns:1fr;text-align:center}.verband-logo{min-height:120px}.verband-card .hero-actions{justify-content:center}.footer-inner,.qm-bottom-inner{flex-direction:column;align-items:flex-start}.footer-inner img{width:250px}.privacy-section{padding:0 16px}.privacy-details summary{font-size:16px;padding:16px}.privacy-content{padding:15px}}
   </style>
 </head>
 <body>
-<header>
-  <div class="header-inner">
-    <a class="brand" href="#start"><img src="halle-logo.png" alt="Intensivpflege-Halle-GmbH"></a>
-    <div class="qm-links">
-      <a class="qm-btn" href="https://christiandiebner86-cpu.github.io/" target="_blank" rel="noopener">🔐 QM HALLE</a>
-      <a class="qm-btn" href="https://christiandiebner86-cpu.github.io/schindler-qm-portal/" target="_blank" rel="noopener">🔐 QM SCHINDLER INTENSIVPFLEGE</a>
-    </div>
-    <a class="phone" href="tel:+4934938238868">☎ 03493 82 38 868</a>
-  </div>
-  <nav>
-    <a class="active" href="#start">Startseite</a>
-    <a href="#ueber-uns">Über uns</a>
-    <a href="#leistungen">Leistungen</a>
-    <a href="#karriere">Karriere</a>
-    <a href="#bewerbung">Bewerbung</a>
-    <a href="#kontakt">Kontakt</a>
-  </nav>
-</header>
+<header><div class="header-inner"><a class="brand" href="#start"><img src="halle-logo.png" alt="Intensivpflege-Halle-GmbH"></a><div class="qm-links"><a class="qm-btn" href="https://christiandiebner86-cpu.github.io/" target="_blank" rel="noopener">🔐 QM HALLE</a><a class="qm-btn" href="https://christiandiebner86-cpu.github.io/schindler-qm-portal/" target="_blank" rel="noopener">🔐 QM SCHINDLER INTENSIVPFLEGE</a></div><a class="phone" href="tel:+4934938238868">☎ 03493 82 38 868</a></div><nav><a class="active" href="#start">Startseite</a><a href="#ueber-uns">Über uns</a><a href="#leistungen">Leistungen</a><a href="#weiterbildung">Weiterbildung</a><a href="#karriere">Karriere</a><a href="#bewerbung">Bewerbung</a><a href="#kontakt">Kontakt</a></nav></header>
 <main>
-  <section class="hero" id="start">
-    <div class="hero-inner">
-      <div class="hero-copy">
-        <h1>Intensivpflege<br>mit Herz in Halle</h1>
-        <div class="hero-sub">Würde. Qualität. Vertrauen.</div>
-        <p>Wir sind rund um die Uhr für unsere Patienten da – mit qualifiziertem Fachpersonal, individueller Versorgung und echter Menschlichkeit.</p>
-        <div class="hero-actions">
-          <a class="btn btn-primary" href="tel:+4934938238868">☎ 03493 82 38 868</a>
-          <a class="btn btn-outline" href="#ueber-uns">Mehr über uns</a>
-        </div>
-      </div>
-      <div class="hero-photo"><img src="hero-beatmung-tk-richtig.png" alt="Patient mit Trachealkanüle und invasiver Beatmung"></div>
-    </div>
-  </section>
-  <div class="benefits-wrap">
-    <div class="benefits">
-      <div class="benefit"><div class="benefit-icon">🛡️</div><div><strong>24h</strong><span>Versorgung</span></div></div>
-      <div class="benefit"><div class="benefit-icon">👥</div><div><strong>Erfahrenes</strong><span>Fachpersonal</span></div></div>
-      <div class="benefit"><div class="benefit-icon">♡</div><div><strong>Mit Herz</strong><span>und Empathie</span></div></div>
-      <div class="benefit"><div class="benefit-icon">🏅</div><div><strong>Hohe</strong><span>Qualitätsstandards</span></div></div>
-      <div class="benefit"><div class="benefit-icon">📍</div><div><strong>Regional</strong><span>in Halle & Umgebung</span></div></div>
-    </div>
-  </div>
-  <div class="quickapply-wrap" id="bewerbung">
-    <div class="quickapply">
-      <div><h2>⏱ In 60 Sekunden bewerben.</h2><p>Kein Anschreiben. Kein Lebenslauf nötig.<br>Wir melden uns schnellstmöglich bei Ihnen.</p></div>
-      <form id="applicationForm" class="quick-form">
-        <input id="appName" required placeholder="Ihr Name*">
-        <select id="appQualification" required><option value="">Qualifikation*</option><option>Pflegefachfrau / Pflegefachmann</option><option>Gesundheits- und Krankenpfleger/in</option><option>Altenpfleger/in</option><option>Kinderkrankenpfleger/in</option><option>Andere examinierte Pflegefachkraft</option></select>
-        <textarea id="appMessage" placeholder="Nachricht (optional)"></textarea>
-        <input id="appPhone" type="tel" required placeholder="Telefonnummer*">
-        <select id="appArea"><option value="">Weiterbildung AKI*</option><option>Basiskurs AKI</option><option>Expertenkurs AKI</option><option>Basiskurs und Expertenkurs AKI</option><option>Keine AKI-Weiterbildung</option><option>Keine Angabe</option></select>
-        <select id="appWorkplace"><option value="">Wo möchten Sie arbeiten?</option><option>Halle (Saale)</option><option>Halle / Umgebung bis 20 km</option><option>Halle / Umgebung bis 30 km</option><option>Halle / Umgebung bis 50 km</option><option>Leipzig</option><option>Leipzig / Umgebung</option><option>Saalkreis / Umgebung</option><option>Sandersdorf-Brehna / Umgebung</option><option>Flexibel / nach Absprache</option></select>
-        <button class="btn submit" id="applicationSubmit" type="submit">Jetzt bewerben ✈</button>
-        <div class="privacy">🔒 Ihre Angaben werden ausschließlich zur Bearbeitung Ihrer Bewerbung verwendet. Mit dem Absenden stimmen Sie der Verarbeitung gemäß unserer Datenschutzerklärung zu.</div>
-        <div id="applicationMessage" class="form-message"></div>
-      </form>
-    </div>
-  </div>
-  <section class="section" id="ueber-uns">
-    <div class="section-kicker">Über uns</div>
-    <h2 class="section-title">Pflege, die Menschen und Alltag zusammenbringt.</h2>
-    <p class="lead">Unser Schwerpunkt ist die außerklinische Intensivpflege für Erwachsene und Kinder. Wir verbinden fachliche Sicherheit mit persönlicher Begleitung, Respekt und einem verlässlichen Team.</p>
-  </section>
-  <section class="section" id="leistungen">
-    <div class="section-kicker">Unsere Leistungen</div>
-    <h2 class="section-title">Spezialisierte Intensivpflege – individuell & ganzheitlich.</h2>
-    <div class="services">
-      <article class="service"><div class="icon">🫁</div><h3>Beatmungspflege</h3><p>Versorgung bei invasiver und nichtinvasiver Beatmung sowie Überwachung relevanter Parameter.</p></article>
-      <article class="service"><div class="icon">🩺</div><h3>Tracheostomaversorgung</h3><p>Fachgerechte Pflege rund um Trachealkanülen, Sekretmanagement und Absaugen.</p></article>
-      <article class="service"><div class="icon">💉</div><h3>Grund- & Behandlungspflege</h3><p>Ärztlich verordnete Maßnahmen, Medikamentengabe, Mobilisation, Wundversorgung und Grundpflege.</p></article>
-      <article class="service"><div class="icon">🤝</div><h3>Beratung & Angehörigenhilfe</h3><p>Begleitung bei Organisation, Pflegegraden, Überleitung und Fragen zur Versorgung.</p></article>
-    </div>
-  </section>
-  <section class="career" id="karriere">
-    <div class="career-inner">
-      <div class="career-copy">
-        <div class="section-kicker" style="color:#9fe050">Wir suchen Verstärkung</div>
-        <h2>Pflegefachkraft?<br><span>Dann sollten wir uns kennenlernen.</span></h2>
-        <p>Bei uns zählt Fachwissen genauso wie Menschlichkeit, Verlässlichkeit und Teamgeist.</p>
-        <div class="salary">
-          <div class="salary-main"><small>Pflegefachkräfte (P3)</small><strong>ab 4.125 € brutto / Monat Grundgehalt*</strong><span>je nach Stufe bis 4.966,64 € brutto / Monat Grundgehalt*</span></div>
-          <div class="salary-extra"><strong>+ 155 € Schichtzulage</strong><span>zzgl. Sonn-, Feiertags- und Nachtzuschläge sowie mögliche Funktionszulagen</span></div>
-        </div>
-        <div class="career-list">
-          <div>30 Tage Urlaub</div>
-          <div>13. Monatsgehalt</div>
-          <div>Fort- & Weiterbildungen</div>
-          <div>Persönliche Einarbeitung</div>
-          <div>Feste Ansprechpartner</div>
-          <div>Initiativbewerbung möglich</div>
-        </div>
-        <div class="tarif-note">Vergütung nach GöD – Gewerkschaft öffentlicher Dienst und Dienstleistungen</div>
-        <div style="margin-top:18px"><a class="btn btn-green" href="#bewerbung">Jetzt schnell bewerben →</a></div>
-        <div class="fineprint">* Grundgehalt nach Entgeltgruppe und Stufe. Schichtzulage sowie Sonn-, Feiertags- und Nachtzuschläge kommen zusätzlich hinzu. Die Vergütung erfolgt nach GöD – Gewerkschaft öffentlicher Dienst und Dienstleistungen.</div>
-      </div>
-      <div class="career-img"><img src="karriere-team.png" alt="Pflegefachkräfte der Intensivpflege"></div>
-    </div>
-  </section>
-
-  <section class="verband" aria-labelledby="verband-title">
-    <div class="verband-card">
-      <a class="verband-logo" href="https://abvp.de/" target="_blank" rel="noopener noreferrer" aria-label="ABVP e.V. öffnen">
-        <img src="https://www.intensivpflege-halle.de/s/cc_images/cache_16903021.png?t=1688112271" alt="ABVP e.V. – Arbeitgeber- und BerufsVerband Privater Pflege">
-      </a>
-      <div>
-        <div class="section-kicker">Starker Verband</div>
-        <h2 id="verband-title">Wir sind Mitglied im ABVP e.V.</h2>
-        <p>Als Mitglied im Arbeitgeber- und BerufsVerband Privater Pflege e.V. sind wir Teil einer starken Interessenvertretung für private Pflegeunternehmen.</p>
-        <div class="hero-actions"><a class="btn btn-outline" href="https://abvp.de/" target="_blank" rel="noopener noreferrer">Zur Website des ABVP →</a></div>
-      </div>
-    </div>
-  </section>
-
-  <section class="section" id="kontakt">
-    <div class="section-kicker">Kontakt</div>
-    <h2 class="section-title">Wir sind für Ihre Fragen da.</h2>
-    <div class="contact-grid">
-      <div class="contact"><small>Telefon</small><strong>03493 82 38 868</strong><a href="tel:+4934938238868">Jetzt anrufen →</a></div>
-      <div class="contact"><small>E-Mail</small><strong>intensivpflegehalle@gmail.com</strong><a href="mailto:intensivpflegehalle@gmail.com">E-Mail schreiben →</a></div>
-      <div class="contact"><small>Hauptsitz</small><strong>Wilhelm-von-Klewiz-Straße 11<br>06132 Halle (Saale)</strong><span>Intensivpflege-Halle-GmbH</span></div>
-    </div>
-  </section>
-  <div class="qm-bottom">
-    <div class="qm-bottom-inner">
-      <div><h3>Internes Qualitätsmanagement</h3><div>Bitte das passende QM-Portal auswählen.</div></div>
-      <div class="hero-actions"><a class="btn btn-green" href="https://christiandiebner86-cpu.github.io/" target="_blank" rel="noopener">🔐 QM Halle</a><a class="btn btn-outline" href="https://christiandiebner86-cpu.github.io/schindler-qm-portal/" target="_blank" rel="noopener">🔐 QM Schindler</a></div>
-    </div>
-  </div>
+<section class="hero" id="start"><div class="hero-inner"><div class="hero-copy"><h1>Intensivpflege<br>mit Herz in Halle</h1><div class="hero-sub">Würde. Qualität. Vertrauen.</div><p>Wir sind rund um die Uhr für unsere Patienten da – mit qualifiziertem Fachpersonal, individueller Versorgung und echter Menschlichkeit.</p><div class="hero-actions"><a class="btn btn-primary" href="tel:+4934938238868">☎ 03493 82 38 868</a><a class="btn btn-outline" href="#ueber-uns">Mehr über uns</a></div></div><div class="hero-photo"><img src="hero-beatmung-tk-richtig.png" alt="Patient mit Trachealkanüle und invasiver Beatmung"></div></div></section>
+<div class="benefits-wrap"><div class="benefits"><div class="benefit"><div class="benefit-icon">🛡️</div><div><strong>24h</strong><span>Versorgung</span></div></div><div class="benefit"><div class="benefit-icon">👥</div><div><strong>Erfahrenes</strong><span>Fachpersonal</span></div></div><div class="benefit"><div class="benefit-icon">♡</div><div><strong>Mit Herz</strong><span>und Empathie</span></div></div><div class="benefit"><div class="benefit-icon">🏅</div><div><strong>Hohe</strong><span>Qualitätsstandards</span></div></div><div class="benefit"><div class="benefit-icon">📍</div><div><strong>Regional</strong><span>in Halle & Umgebung</span></div></div></div></div>
+<div class="quickapply-wrap" id="bewerbung"><div class="quickapply"><div><h2>⏱ In 60 Sekunden bewerben.</h2><p>Kein Anschreiben. Kein Lebenslauf nötig.<br>Wir melden uns schnellstmöglich bei Ihnen.</p></div><form id="applicationForm" class="quick-form"><input id="appName" required placeholder="Ihr Name*"><select id="appQualification" required><option value="">Qualifikation*</option><option>Pflegefachfrau / Pflegefachmann</option><option>Gesundheits- und Krankenpfleger/in</option><option>Altenpfleger/in</option><option>Kinderkrankenpfleger/in</option><option>Andere examinierte Pflegefachkraft</option></select><textarea id="appMessage" placeholder="Nachricht (optional)"></textarea><input id="appPhone" type="tel" required placeholder="Telefonnummer*"><select id="appArea"><option value="">Weiterbildung AKI*</option><option>Basiskurs AKI</option><option>Expertenkurs AKI</option><option>Basiskurs und Expertenkurs AKI</option><option>Keine AKI-Weiterbildung</option><option>Keine Angabe</option></select><select id="appWorkplace"><option value="">Wo möchten Sie arbeiten?</option><option>Halle (Saale)</option><option>Halle / Umgebung bis 20 km</option><option>Halle / Umgebung bis 30 km</option><option>Halle / Umgebung bis 50 km</option><option>Leipzig</option><option>Leipzig / Umgebung</option><option>Saalkreis / Umgebung</option><option>Sandersdorf-Brehna / Umgebung</option><option>Flexibel / nach Absprache</option></select><button class="btn submit" id="applicationSubmit" type="submit">Jetzt bewerben ✈</button><div class="privacy">🔒 Ihre Angaben werden ausschließlich zur Bearbeitung Ihrer Bewerbung verwendet. Mit dem Absenden stimmen Sie der Verarbeitung gemäß unserer Datenschutzerklärung zu.</div><div id="applicationMessage" class="form-message"></div></form></div></div>
+<section class="section" id="ueber-uns"><div class="section-kicker">Über uns</div><h2 class="section-title">Pflege, die Menschen und Alltag zusammenbringt.</h2><p class="lead">Unser Schwerpunkt ist die außerklinische Intensivpflege für Erwachsene und Kinder. Wir verbinden fachliche Sicherheit mit persönlicher Begleitung, Respekt und einem verlässlichen Team.</p></section>
+<section class="section" id="leistungen"><div class="section-kicker">Unsere Leistungen</div><h2 class="section-title">Spezialisierte Intensivpflege – individuell & ganzheitlich.</h2><div class="services"><article class="service"><div class="icon">🫁</div><h3>Beatmungspflege</h3><p>Versorgung bei invasiver und nichtinvasiver Beatmung sowie Überwachung relevanter Parameter.</p></article><article class="service"><div class="icon">🩺</div><h3>Tracheostomaversorgung</h3><p>Fachgerechte Pflege rund um Trachealkanülen, Sekretmanagement und Absaugen.</p></article><article class="service"><div class="icon">💉</div><h3>Grund- & Behandlungspflege</h3><p>Ärztlich verordnete Maßnahmen, Medikamentengabe, Mobilisation, Wundversorgung und Grundpflege.</p></article><article class="service"><div class="icon">🤝</div><h3>Beratung & Angehörigenhilfe</h3><p>Begleitung bei Organisation, Pflegegraden, Überleitung und Fragen zur Versorgung.</p></article></div></section>
+<section class="training" id="weiterbildung"><div class="training-inner"><div class="training-grid"><div><div class="section-kicker">Fort- & Weiterbildung</div><h2 class="section-title">Wir investieren in fachliche Entwicklung.</h2><p class="lead">Unsere Mitarbeiterinnen und Mitarbeiter können sich gezielt weiterqualifizieren. Zu den von uns angebotenen bzw. unterstützten Weiterbildungen gehören:</p><div class="training-list"><div class="training-item">🎓 Fachkraft für außerklinische Intensiv- und Beatmungspflege</div><div class="training-item">🫁 Pflegeexperte für außerklinische Intensiv- und Beatmungspflege</div><div class="training-item">👩‍⚕️ Pflegedienstleitung</div></div></div><aside class="campus-card"><div class="campus-badge">E-Learning</div><h3>Weiterbildung über Pflegecampus</h3><p>Für unsere Fort- und Weiterbildungen nutzen wir Pflegecampus. So können Lerninhalte flexibel, digital und praxisnah bearbeitet werden.</p><a class="btn btn-green" href="https://intensivpflege-halle.pflegecampus.de/" target="_blank" rel="noopener noreferrer">Zum Pflegecampus →</a></aside></div></div></section>
+<section class="career" id="karriere"><div class="career-inner"><div class="career-copy"><div class="section-kicker" style="color:#9fe050">Wir suchen Verstärkung</div><h2>Pflegefachkraft?<br><span>Dann sollten wir uns kennenlernen.</span></h2><p>Bei uns zählt Fachwissen genauso wie Menschlichkeit, Verlässlichkeit und Teamgeist.</p><div class="salary"><div class="salary-main"><small>Pflegefachkräfte (P3)</small><strong>ab 4.125 € brutto / Monat Grundgehalt*</strong><span>je nach Stufe bis 4.966,64 € brutto / Monat Grundgehalt*</span></div><div class="salary-extra"><strong>+ 155 € Schichtzulage</strong><span>zzgl. Sonn-, Feiertags- und Nachtzuschläge sowie mögliche Funktionszulagen</span></div></div><div class="career-list"><div>30 Tage Urlaub</div><div>13. Monatsgehalt</div><div>Fort- & Weiterbildungen</div><div>Persönliche Einarbeitung</div><div>Feste Ansprechpartner</div><div>Initiativbewerbung möglich</div></div><div class="tarif-note">Vergütung nach GöD – Gewerkschaft öffentlicher Dienst und Dienstleistungen</div><div style="margin-top:18px"><a class="btn btn-green" href="#bewerbung">Jetzt schnell bewerben →</a></div><div class="fineprint">* Grundgehalt nach Entgeltgruppe und Stufe. Schichtzulage sowie Sonn-, Feiertags- und Nachtzuschläge kommen zusätzlich hinzu. Die Vergütung erfolgt nach GöD – Gewerkschaft öffentlicher Dienst und Dienstleistungen.</div></div><div class="career-img"><img src="karriere-team.png" alt="Pflegefachkräfte der Intensivpflege"></div></div></section>
+<section class="verband" aria-labelledby="verband-title"><div class="verband-card"><a class="verband-logo" href="https://abvp.de/" target="_blank" rel="noopener noreferrer" aria-label="ABVP e.V. öffnen"><img src="https://www.intensivpflege-halle.de/s/cc_images/cache_16903021.png?t=1688112271" alt="ABVP e.V. – Arbeitgeber- und BerufsVerband Privater Pflege"></a><div><div class="section-kicker">Starker Verband</div><h2 id="verband-title">Wir sind Mitglied im ABVP e.V.</h2><p>Als Mitglied im Arbeitgeber- und BerufsVerband Privater Pflege e.V. sind wir Teil einer starken Interessenvertretung für private Pflegeunternehmen.</p><div class="hero-actions"><a class="btn btn-outline" href="https://abvp.de/" target="_blank" rel="noopener noreferrer">Zur Website des ABVP →</a></div></div></div></section>
+<section class="section" id="kontakt"><div class="section-kicker">Kontakt</div><h2 class="section-title">Wir sind für Ihre Fragen da.</h2><div class="contact-grid"><div class="contact"><small>Telefon</small><strong>03493 82 38 868</strong><a href="tel:+4934938238868">Jetzt anrufen →</a></div><div class="contact"><small>E-Mail</small><strong>intensivpflegehalle@gmail.com</strong><a href="mailto:intensivpflegehalle@gmail.com">E-Mail schreiben →</a></div><div class="contact"><small>Hauptsitz</small><strong>Wilhelm-von-Klewiz-Straße 11<br>06132 Halle (Saale)</strong><span>Intensivpflege-Halle-GmbH</span></div></div></section>
+<div class="qm-bottom"><div class="qm-bottom-inner"><div><h3>Internes Qualitätsmanagement</h3><div>Bitte das passende QM-Portal auswählen.</div></div><div class="hero-actions"><a class="btn btn-green" href="https://christiandiebner86-cpu.github.io/" target="_blank" rel="noopener">🔐 QM Halle</a><a class="btn btn-outline" href="https://christiandiebner86-cpu.github.io/schindler-qm-portal/" target="_blank" rel="noopener">🔐 QM Schindler</a></div></div></div>
 </main>
-<section class="privacy-section" id="datenschutz">
-  <details class="privacy-details">
-    <summary>🔒 Datenschutzerklärung anzeigen</summary>
-    <div class="privacy-content"><div class="privacy-text">
-      <h3>Datenschutzerklärung</h3>
-      <p>Wir nehmen den Schutz Ihrer personenbezogenen Daten ernst. Nachfolgend informieren wir darüber, welche Daten beim Besuch dieser Website und bei der Nutzung der Schnellbewerbung verarbeitet werden.</p>
-      <h3>1. Verantwortliche Stelle</h3><p>Intensivpflege-Halle-GmbH<br>Fritz-Reuter-Straße 42<br>06792 Sandersdorf-Brehna<br>Telefon: 03493 82 38 868<br>E-Mail: <a href="mailto:intensivpflegehalle@gmail.com">intensivpflegehalle@gmail.com</a></p>
-      <h3>2. Datenschutzbeauftragter</h3><p>Egbert Schindler<br>Fritz-Reuter-Straße 42<br>06792 Sandersdorf-Brehna<br>Telefon: 03493 82 38 868<br>E-Mail: <a href="mailto:egbert.schindler@web.de">egbert.schindler@web.de</a></p>
-      <h3>3. Aufruf und Bereitstellung der Website</h3><p>Beim Aufruf der Website werden durch den Hosting-Provider technisch erforderliche Zugriffsdaten verarbeitet. Dazu können insbesondere IP-Adresse, Datum und Uhrzeit des Abrufs, aufgerufene Seite bzw. Datei, Browsertyp, Betriebssystem und Referrer-Informationen gehören. Die Verarbeitung dient der technischen Bereitstellung, Stabilität und Sicherheit der Website.</p><p>Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO.</p>
-      <h3>4. Schnellbewerbung</h3><p>Über die Schnellbewerbung können Sie sich direkt bei uns bewerben. Dabei verarbeiten wir die von Ihnen eingegebenen Angaben, insbesondere Name, Telefonnummer, berufliche Qualifikation, Angaben zur AKI-Weiterbildung, gewünschten Arbeitsort bzw. Einsatzbereich sowie eine freiwillige Nachricht.</p>
-      <h3>5. Supabase</h3><p>Für die technische Übermittlung und Speicherung der Schnellbewerbung verwenden wir Supabase.</p>
-      <h3>6. JavaScript-Bibliothek über jsDelivr</h3><p>Die für die Verbindung mit Supabase benötigte JavaScript-Bibliothek wird über das Content Delivery Network jsDelivr geladen.</p>
-      <h3>7. E-Mail und Telefon</h3><p>Wenn Sie uns per E-Mail oder telefonisch kontaktieren, verarbeiten wir die von Ihnen übermittelten Daten zur Bearbeitung Ihrer Anfrage.</p>
-      <h3>8. Cookies, Analyse und externe Medien</h3><p>In der aktuell vorgesehenen Version dieser Website setzen wir selbst keine Analysewerkzeuge wie Google Analytics ein.</p>
-      <h3>9. Ihre Rechte</h3><p>Sie haben im Rahmen der gesetzlichen Voraussetzungen insbesondere das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung und Datenübertragbarkeit.</p>
-      <h3>10. SSL-/TLS-Verschlüsselung</h3><p>Diese Website soll ausschließlich verschlüsselt über HTTPS bereitgestellt werden.</p>
-      <h3>11. Aktualität</h3><p>Wir passen diese Datenschutzerklärung an, wenn sich eingesetzte Dienste, Funktionen oder rechtliche Anforderungen ändern.</p>
-      <div class="privacy-note">Stand: September 2026</div>
-    </div></div>
-  </details>
-</section>
-<footer>
-  <div class="footer-inner">
-    <div><img src="halle-logo.png" alt="Intensivpflege-Halle-GmbH"><div class="footer-address">Wilhelm-von-Klewiz-Straße 11 · 06132 Halle (Saale)</div></div>
-    <div class="footer-links"><a href="https://www.intensivpflege-halle.de/impressum/" target="_blank" rel="noopener">Impressum</a><a href="#datenschutz" id="privacyFooterLink">Datenschutz</a><a href="https://christiandiebner86-cpu.github.io/" target="_blank" rel="noopener">QM Halle</a><a href="https://christiandiebner86-cpu.github.io/schindler-qm-portal/" target="_blank" rel="noopener">QM Schindler</a></div>
-  </div>
-  <div class="foot-bottom">© Intensivpflege-Halle-GmbH</div>
-</footer>
+<section class="privacy-section" id="datenschutz"><details class="privacy-details"><summary>🔒 Datenschutzerklärung anzeigen</summary><div class="privacy-content"><div class="privacy-text"><h3>Datenschutzerklärung</h3><p>Wir nehmen den Schutz Ihrer personenbezogenen Daten ernst. Nachfolgend informieren wir darüber, welche Daten beim Besuch dieser Website und bei der Nutzung der Schnellbewerbung verarbeitet werden.</p><h3>1. Verantwortliche Stelle</h3><p>Intensivpflege-Halle-GmbH<br>Fritz-Reuter-Straße 42<br>06792 Sandersdorf-Brehna<br>Telefon: 03493 82 38 868<br>E-Mail: <a href="mailto:intensivpflegehalle@gmail.com">intensivpflegehalle@gmail.com</a></p><h3>2. Datenschutzbeauftragter</h3><p>Egbert Schindler<br>Fritz-Reuter-Straße 42<br>06792 Sandersdorf-Brehna<br>Telefon: 03493 82 38 868<br>E-Mail: <a href="mailto:egbert.schindler@web.de">egbert.schindler@web.de</a></p><h3>3. Aufruf und Bereitstellung der Website</h3><p>Beim Aufruf der Website werden durch den Hosting-Provider technisch erforderliche Zugriffsdaten verarbeitet.</p><h3>4. Schnellbewerbung</h3><p>Über die Schnellbewerbung können Sie sich direkt bei uns bewerben.</p><h3>5. Supabase</h3><p>Für die technische Übermittlung und Speicherung der Schnellbewerbung verwenden wir Supabase.</p><h3>6. JavaScript-Bibliothek über jsDelivr</h3><p>Die für die Verbindung mit Supabase benötigte JavaScript-Bibliothek wird über das Content Delivery Network jsDelivr geladen.</p><h3>7. E-Mail und Telefon</h3><p>Wenn Sie uns per E-Mail oder telefonisch kontaktieren, verarbeiten wir die von Ihnen übermittelten Daten zur Bearbeitung Ihrer Anfrage.</p><h3>8. Cookies, Analyse und externe Medien</h3><p>In der aktuell vorgesehenen Version dieser Website setzen wir selbst keine Analysewerkzeuge wie Google Analytics ein.</p><h3>9. Ihre Rechte</h3><p>Sie haben im Rahmen der gesetzlichen Voraussetzungen insbesondere das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung und Datenübertragbarkeit.</p><h3>10. SSL-/TLS-Verschlüsselung</h3><p>Diese Website soll ausschließlich verschlüsselt über HTTPS bereitgestellt werden.</p><h3>11. Aktualität</h3><p>Wir passen diese Datenschutzerklärung an, wenn sich eingesetzte Dienste, Funktionen oder rechtliche Anforderungen ändern.</p><div class="privacy-note">Stand: September 2026</div></div></div></details></section>
+<footer><div class="footer-inner"><div><img src="halle-logo.png" alt="Intensivpflege-Halle-GmbH"><div class="footer-address">Wilhelm-von-Klewiz-Straße 11 · 06132 Halle (Saale)</div></div><div class="footer-links"><a href="https://www.intensivpflege-halle.de/impressum/" target="_blank" rel="noopener">Impressum</a><a href="#datenschutz" id="privacyFooterLink">Datenschutz</a><a href="https://christiandiebner86-cpu.github.io/" target="_blank" rel="noopener">QM Halle</a><a href="https://christiandiebner86-cpu.github.io/schindler-qm-portal/" target="_blank" rel="noopener">QM Schindler</a></div></div><div class="foot-bottom">© Intensivpflege-Halle-GmbH</div></footer>
 <script>
-  const privacyFooterLink=document.getElementById('privacyFooterLink');
-  const privacyDetails=document.querySelector('.privacy-details');
-  if(privacyFooterLink&&privacyDetails){privacyFooterLink.addEventListener('click',()=>{privacyDetails.open=true;});}
-  const navLinks=Array.from(document.querySelectorAll('nav a[href^="#"]'));
-  navLinks.forEach(link=>link.addEventListener('click',()=>{navLinks.forEach(x=>x.classList.remove('active'));link.classList.add('active');}));
-  const WEBSITE_SUPABASE_URL="https://syvcomshcexhnxhplqhx.supabase.co";
-  const WEBSITE_SUPABASE_KEY="sb_publishable_SQKuCSBTQK0uE6d2nfM5hg_UEeo8x2z";
-  const websiteSupabase=window.supabase?window.supabase.createClient(WEBSITE_SUPABASE_URL,WEBSITE_SUPABASE_KEY):null;
-  function showFormMessage(id,text,type){const el=document.getElementById(id);el.textContent=text;el.className='form-message '+type;}
-  document.getElementById('applicationForm').addEventListener('submit',async function(e){
-    e.preventDefault();
-    const b=document.getElementById('applicationSubmit');b.disabled=true;b.textContent='Wird gesendet …';
-    try{
-      if(!websiteSupabase)throw new Error('Formularservice nicht verfügbar');
-      const aki=document.getElementById('appArea').value;
-      const workplace=document.getElementById('appWorkplace').value;
-      const userMsg=document.getElementById('appMessage').value.trim();
-      const msg=[aki?'Weiterbildung AKI: '+aki:'',workplace?'Gewünschter Arbeitsort: '+workplace:'',userMsg?'Nachricht: '+userMsg:''].filter(Boolean).join('\n\n')||null;
-      const {error}=await websiteSupabase.from('website_applications').insert({name:document.getElementById('appName').value.trim(),email:'schnellbewerbung@keine-angabe.local',phone:document.getElementById('appPhone').value.trim(),qualification:document.getElementById('appQualification').value,hours:null,experience:null,message:msg});
-      if(error)throw error;
-      this.reset();showFormMessage('applicationMessage','Vielen Dank! Ihre Schnellbewerbung wurde übermittelt. Wir melden uns bei Ihnen.','success');
-    }catch(err){console.error(err);showFormMessage('applicationMessage','Die Bewerbung konnte noch nicht gesendet werden. Bitte versuchen Sie es später erneut.','error');}
-    finally{b.disabled=false;b.textContent='Jetzt bewerben ✈';}
-  });
+const privacyFooterLink=document.getElementById('privacyFooterLink');const privacyDetails=document.querySelector('.privacy-details');if(privacyFooterLink&&privacyDetails){privacyFooterLink.addEventListener('click',()=>{privacyDetails.open=true;});}
+const navLinks=Array.from(document.querySelectorAll('nav a[href^="#"]'));navLinks.forEach(link=>link.addEventListener('click',()=>{navLinks.forEach(x=>x.classList.remove('active'));link.classList.add('active');}));
+const WEBSITE_SUPABASE_URL="https://syvcomshcexhnxhplqhx.supabase.co";const WEBSITE_SUPABASE_KEY="sb_publishable_SQKuCSBTQK0uE6d2nfM5hg_UEeo8x2z";const websiteSupabase=window.supabase?window.supabase.createClient(WEBSITE_SUPABASE_URL,WEBSITE_SUPABASE_KEY):null;function showFormMessage(id,text,type){const el=document.getElementById(id);el.textContent=text;el.className='form-message '+type;}
+document.getElementById('applicationForm').addEventListener('submit',async function(e){e.preventDefault();const b=document.getElementById('applicationSubmit');b.disabled=true;b.textContent='Wird gesendet …';try{if(!websiteSupabase)throw new Error('Formularservice nicht verfügbar');const aki=document.getElementById('appArea').value;const workplace=document.getElementById('appWorkplace').value;const userMsg=document.getElementById('appMessage').value.trim();const msg=[aki?'Weiterbildung AKI: '+aki:'',workplace?'Gewünschter Arbeitsort: '+workplace:'',userMsg?'Nachricht: '+userMsg:''].filter(Boolean).join('\n\n')||null;const {error}=await websiteSupabase.from('website_applications').insert({name:document.getElementById('appName').value.trim(),email:'schnellbewerbung@keine-angabe.local',phone:document.getElementById('appPhone').value.trim(),qualification:document.getElementById('appQualification').value,hours:null,experience:null,message:msg});if(error)throw error;this.reset();showFormMessage('applicationMessage','Vielen Dank! Ihre Schnellbewerbung wurde übermittelt. Wir melden uns bei Ihnen.','success');}catch(err){console.error(err);showFormMessage('applicationMessage','Die Bewerbung konnte noch nicht gesendet werden. Bitte versuchen Sie es später erneut.','error');}finally{b.disabled=false;b.textContent='Jetzt bewerben ✈';}});
 </script>
 </body>
 </html>
