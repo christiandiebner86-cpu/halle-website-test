@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://intensivpflege-halle.de/sitemap.xml
