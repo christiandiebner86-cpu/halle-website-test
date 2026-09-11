@@ -1,0 +1,54 @@
+name: Produktionsbereinigung Retry
+on:
+  push:
+    paths:
+      - '.github/workflows/production-cleanup-retry.yml'
+permissions:
+  contents: write
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: ABVP-Logo lokal speichern
+        run: curl -fL --retry 3 'https://abvp.de/wp-content/uploads/ABVP-Mitglied-Logo-V2.png' -o abvp-mitglied-logo.png
+      - name: Produktionsdatei aktualisieren
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          template=Path('.github/workflows/production-cleanup-2026-09-11.yml').read_text(encoding='utf-8')
+          def extract(name):
+              m=re.search(name+r"='''(.*?)'''",template,re.S)
+              if not m: raise SystemExit('Vorlage '+name+' fehlt')
+              return m.group(1)
+          impressum=extract('impressum')
+          datenschutz=extract('datenschutz')
+          s=s.replace('https://www.intensivpflege-halle.de/s/cc_images/cache_17499313.jpg?t=1729590566','karriere-team.png')
+          s=s.replace('https://www.intensivpflege-halle.de/s/cc_images/cache_16903021.png?t=1688112271','abvp-mitglied-logo.png')
+          blocks=list(re.finditer(r'<details\b[^>]*>.*?</details>',s,re.S|re.I))
+          def block_for(word):
+              hits=[m for m in blocks if word.lower() in m.group(0).lower()]
+              if len(hits)!=1: raise SystemExit(f'{word}: Details-Treffer {len(hits)}')
+              return hits[0]
+          mi=block_for('Impressum')
+          md=block_for('Datenschutz')
+          for m,repl in sorted([(mi,impressum),(md,datenschutz)],key=lambda x:x[0].start(),reverse=True):
+              s=s[:m.start()]+repl+s[m.end():]
+          p.write_text(s,encoding='utf-8')
+      - name: Ergebnis prüfen
+        run: |
+          ! grep -F 'www.intensivpflege-halle.de/s/cc_images/' index.html
+          test -s abvp-mitglied-logo.png
+          grep -q 'Hosting über GitHub Pages' index.html
+          grep -q 'Stand: September 2026' index.html
+          grep -q 'Online-Streitbeilegung' index.html
+      - name: Commit
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html abvp-mitglied-logo.png
+          git commit -m 'Produktionsbilder lokalisieren und Rechtstexte aktualisieren'
+          git push
